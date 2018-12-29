@@ -38,10 +38,23 @@ class IniGraph:
         fw.close()
         f.close()
 
+    def getNodeOutDegree(self, i_node):
+        #  -- get the out-degree --
+        deg = 0
+        with open(self.data_degree_path) as f:
+            for line in f:
+                (node, degree) = line.split()
+                if node == i_node:
+                    deg = int(degree)
+                    break
+        f.close()
+
+        return deg
+
     def constructSeedCostDict(self):
         # -- calculate the cost for each seed
         ### s_cost_dict: (dict) the set of cost for each seed
-        ### s_cost_dict[i]: (float2) the degree of i's seed
+        ### s_cost_dict[ii]: (float2) the degree of ii's seed
         ### num_node: (int) the number of nodes in data
         ### max_deg: (int) the maximum degree in data
         s_cost_dict = {}
@@ -99,23 +112,23 @@ class IniGraph:
         f.close()
         return wallet_list
 
-    # @staticmethod
-    # def getNodeClassList(upper, wallet_list):
-    #     class_acc_node_list, class_acc_wallet = [[] for _ in range(10)], [0.0 for _ in range(10)]
-    #     for i in range(len(wallet_list)):
-    #         if wallet_list[i] == 0:
-    #             class_acc_node_list[0].append(str(i))
-    #             class_acc_wallet[0] += wallet_list[i]
-    #         for num in range(10):
-    #             if upper * num / 10 < wallet_list[i] <= upper * (num + 1) / 10:
-    #                 class_acc_node_list[num].append(str(i))
-    #                 class_acc_wallet[num] += wallet_list[i]
-    #                 continue
-    #
-    #     for num in range(10):
-    #         class_acc_wallet[num] = round(class_acc_wallet[num], 2)
-    #
-    #     return class_acc_node_list, class_acc_wallet
+    @staticmethod
+    def getNodeClassList(upper, wallet_list):
+        class_acc_node_list, class_acc_wallet = [[] for _ in range(10)], [0.0 for _ in range(10)]
+        for i in range(len(wallet_list)):
+            if wallet_list[i] == 0:
+                class_acc_node_list[0].append(str(i))
+                class_acc_wallet[0] += wallet_list[i]
+            for num in range(10):
+                if upper * num / 10 < wallet_list[i] <= upper * (num + 1) / 10:
+                    class_acc_node_list[num].append(str(i))
+                    class_acc_wallet[num] += wallet_list[i]
+                    continue
+
+        for num in range(10):
+            class_acc_wallet[num] = round(class_acc_wallet[num], 2)
+
+        return class_acc_node_list, class_acc_wallet
 
 
 class IniProduct:
@@ -158,9 +171,9 @@ class IniProduct:
                     continue
 
         n = 1
-        file_path = "product/item_r1p" + str(self.num_price) + "n" + str(n) + ".txt"
+        file_path = "product/r1p" + str(self.num_price) + "n" + str(n) + ".txt"
         while os.path.exists(file_path):
-            file_path = "product/item_r1p" + str(self.num_price) + "n" + str(n) + ".txt"
+            file_path = "product/r1p" + str(self.num_price) + "n" + str(n) + ".txt"
             n += 1
         fw = open(file_path, 'w')
         for p, c, r, pr in prod_list:
@@ -186,7 +199,7 @@ if __name__ == "__main__":
     ### data_set_name: (str) the dataset
     ### product_name: (str) the product dataset
     data_set_name = "email_directed"
-    product_name = "item_r1p3n1"
+    product_name = "r1p3n1"
 
     iniG = IniGraph(data_set_name)
     iniP = IniProduct(product_name)
