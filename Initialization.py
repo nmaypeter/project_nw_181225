@@ -123,12 +123,13 @@ class IniProduct:
         ### prod_name: (str)
         ### num_ratio, num_price: (int)
         self.prod_name = prod_name
-        self.num_ratio = int(list(product_name)[list(product_name).index('r') + 1])
-        self.num_price = int(list(product_name)[list(product_name).index('p') + 1])
+        self.num_ratio = int(list(prod_name)[list(prod_name).index('r') + 1])
+        self.num_price = int(list(prod_name)[list(prod_name).index('p') + 1])
 
     def setProductListWithSRRandMFP(self):
         # -- set the product with single random ratios and multiple fix interval prices
         # -- the difference between each price has to be greater than 1 / number_price --
+        ### dp: (int) the definition of price
         ### prod_list: (list) the set to record output products
         ### prod_list[num]: (list) [num's profit, num's cost, num's ratio, num's price]
         ### prod_list[num][]: (float2)
