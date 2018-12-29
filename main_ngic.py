@@ -46,8 +46,8 @@ if __name__ == "__main__":
                         for bud in range(1, total_budget + 1):
                             start_time = time.time()
 
-                            ssng_main = SeedSelectionNG(graph_dict, seed_cost_dict, product_list, bud, pp_strategy, wpiwp)
-                            dnic_main = DiffusionNormalIC(graph_dict, seed_cost_dict, product_list, pp_strategy, wpiwp)
+                            ssng_main = SeedSelectionNG(graph_dict, seed_cost_dict, product_list, bud, pps, wpiwp)
+                            dnic_main = DiffusionNormalIC(graph_dict, seed_cost_dict, product_list, pps, wpiwp)
 
                             exp_profit_list = [[0 for _ in range(num_node)] for _ in range(num_product)]
                             for kk in range(num_product):
@@ -61,17 +61,15 @@ if __name__ == "__main__":
 
                             result = []
                             avg_profit, avg_budget = 0.0, 0.0
-                            pro_k_list, bud_k_list = [0.0 for _ in range(num_product)], [0.0 for _ in
-                                                                                         range(num_product)]
-                            avg_num_k_seed, avg_num_k_an = [0 for _ in range(num_product)], [0 for _ in
-                                                                                             range(num_product)]
+                            pro_k_list, bud_k_list = [0.0 for _ in range(num_product)], [0.0 for _ in range(num_product)]
+                            avg_num_k_seed, avg_num_k_an = [0 for _ in range(num_product)], [0 for _ in range(num_product)]
                             mrss_times, mrss_pro, mrss_set = [], [], []
                             mrss = [0, 0.0, ""]
                             an_promote_list = [[] for _ in range(sample_number)]
 
                             for sample_count in range(sample_number):
                                 print("pps = " + str(pps) + ", wpiwp = " + str(wpiwp) + ", data_set_name = " + data_set_name +
-                                      ", product_name = " + product_name + "budget = " + str(bud) + "sample_count = " + str(sample_count))
+                                      ", product_name = " + product_name + ", budget = " + str(bud) + ", sample_count = " + str(sample_count))
                                 now_profit, now_budget = 0.0, 0.0
                                 seed_set, activated_node_set = [set() for _ in range(num_product)], [set() for _ in range(num_product)]
                                 personal_prob_list = [[1.0 for _ in range(num_node)] for _ in range(num_product)]
