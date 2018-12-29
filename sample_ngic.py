@@ -4,7 +4,13 @@ if __name__ == "__main__":
     for pps in [1, 2, 3]:
         for wpiwp in [bool(0), bool(1)]:
             data_set_name, product_name = "", ""
-            for data_setting in [1, 2, 3, 4]:
+            for data_setting in [1, 2, 3]:
+                if data_setting == 1:
+                    data_set_name = "email_directed"
+                elif data_setting == 2:
+                    data_set_name = "email_undirected"
+                elif data_setting == 3:
+                    data_set_name = "WikiVote_directed"
                 for prod_setting in [1, 2, 3]:
                     for prod_setting2 in [1, 2, 3, 4]:
                         if prod_setting == 1:
