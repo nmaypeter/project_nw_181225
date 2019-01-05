@@ -4,7 +4,7 @@ if __name__ == "__main__":
     for pps in [1, 2, 3]:
         for wpiwp in [bool(0), bool(1)]:
             data_set_name, product_name = "", ""
-            for data_setting in [1, 2, 3]:
+            for data_setting in [2]:
                 if data_setting == 1:
                     data_set_name = "email_directed"
                 elif data_setting == 2:
@@ -28,8 +28,8 @@ if __name__ == "__main__":
                             elif prod_setting2 == 3:
                                 product_name = "r1p3n2b"
                         for bud in [1, 5, 10]:
-                            print("pps = " + str(pps) + ", wpiwp = " + str(wpiwp) + ", data_set_name = " + data_set_name +
-                                  ", product_name = " + product_name + "budget = " + str(bud))
+                            print("pp_strategy = " + str(pps) + ", wpiwp = " + str(wpiwp) + ", data_set_name = " + data_set_name +
+                                  ", product_name = " + product_name + ", budget = " + str(bud))
                             iniG = IniGraph(data_set_name)
                             iniP = IniProduct(product_name)
 
@@ -43,8 +43,8 @@ if __name__ == "__main__":
                             # -- initialization for each budget --
                             start_time = time.time()
 
-                            ssng_sample = SeedSelectionNG(graph_dict, seed_cost_dict, product_list, bud, pps, whether_passing_information_without_purchasing)
-                            dnic_sample = DiffusionNormalIC(graph_dict, seed_cost_dict, product_list, pps, whether_passing_information_without_purchasing)
+                            ssng_sample = SeedSelectionNG(graph_dict, seed_cost_dict, product_list, bud, pps, wpiwp)
+                            dnic_sample = DiffusionNormalIC(graph_dict, seed_cost_dict, product_list, pps, wpiwp)
 
                             exp_profit_list = [[0 for _ in range(num_node)] for _ in range(num_product)]
                             for k in range(num_product):
@@ -53,12 +53,13 @@ if __name__ == "__main__":
                                         exp_profit_list[k][int(i)] -= seed_cost_dict[i]
                             notban_seed_set = [set(graph_dict.keys()) for _ in range(num_product)]
                             exp_profit_list, notban_seed_set = ssng_sample.updateExpectProfitList([set() for _ in range(num_product)], notban_seed_set, exp_profit_list, 0.0,
-                                                                                                  [set() for _ in range(num_product)], wallet_list,
+                                                                                                  [set() for _ in range(num_product)], [{} for _ in range(num_product)], wallet_list,
                                                                                                   [[1.0 for _ in range(num_node)] for _ in range(num_product)])
 
                             # -- initialization for each sample_number --
                             now_profit, now_budget = 0.0, 0.0
                             seed_set, activated_node_set = [set() for _ in range(num_product)], [set() for _ in range(num_product)]
+                            activated_edge_set = [{} for _ in range(num_product)]
                             personal_prob_list = [[1.0 for _ in range(num_node)] for _ in range(num_product)]
 
                             current_wallet_list = copy.deepcopy(wallet_list)
@@ -77,8 +78,8 @@ if __name__ == "__main__":
                                 for k in range(num_product):
                                     if mep_i_node in nban_seed_set[k]:
                                         nban_seed_set[k].remove(mep_i_node)
-                                seed_set, activated_node_set, an_number, current_profit, current_wallet_list, personal_prob_list = \
-                                    dnic_sample.insertSeedIntoSeedSet(mep_k_prod, mep_i_node, seed_set, activated_node_set, current_wallet_list, personal_prob_list)
+                                seed_set, activated_node_set, activated_edge_set, an_number, current_profit, current_wallet_list, personal_prob_list = \
+                                    dnic_sample.insertSeedIntoSeedSet(mep_k_prod, mep_i_node, seed_set, activated_node_set, activated_edge_set, current_wallet_list, personal_prob_list)
 
                                 for num in range(10):
                                     class_accumulate_num_node_list[num].append(len(iniG.getNodeClassList(iniP.getProductList()[1], current_wallet_list)[0][num]))
@@ -87,21 +88,23 @@ if __name__ == "__main__":
                                 now_budget += seed_cost_dict[mep_i_node]
                                 an_promote_list.append([mep_k_prod, mep_i_node, an_number, round(current_profit, 4), seed_cost_dict[mep_i_node], iniG.getNodeOutDegree(mep_i_node)])
 
-                                exp_profit_list, nban_seed_set = ssng_sample.updateExpectProfitList(seed_set, nban_seed_set, exp_profit_list, now_budget, activated_node_set, current_wallet_list, personal_prob_list)
+                                exp_profit_list, nban_seed_set = ssng_sample.updateExpectProfitList(seed_set, nban_seed_set, exp_profit_list, now_budget, activated_node_set, activated_edge_set, current_wallet_list, personal_prob_list)
                                 mep_k_prod, mep_i_node = ssng_sample.getMostValuableSeed(exp_profit_list, nban_seed_set)
 
                             # -- result --
                             how_long = round(time.time() - start_time, 2)
                             fw = open("result/temp/mngic_pps" + str(pps) + "_wpiwp" * wpiwp + "_" + data_set_name + "_" + product_name + "_b" + str(bud) + ".txt", 'w')
-                            # -- no. of product, no. of seed, wallet of seed --
-                            cc1, cc2, cc3 = "", "", ""
+                            # -- no. of product, no. of seed, degree, wallet of seed --
+                            cc1, cc2, cc3, cc4 = "", "", "", ""
                             for cc in class_count:
                                 cc1 = cc1 + str(cc[0] + 1) + "\t"
                                 cc2 = cc2 + str(cc[1]) + "\t"
-                                cc3 = cc3 + str(round(cc[2], 2)) + "\t"
+                                cc3 = cc3 + str(iniG.getNodeOutDegree(cc[1])) + "\t"
+                                cc4 = cc4 + str(round(cc[2], 2)) + "\t"
                             fw.write(str(cc1) + "\n")
                             fw.write(str(cc2) + "\n")
                             fw.write(str(cc3) + "\n")
+                            fw.write(str(cc4) + "\n")
                             fw.write("\n" * 3)
 
                             # -- accumulative nodes --
