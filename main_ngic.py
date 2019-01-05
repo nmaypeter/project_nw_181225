@@ -4,7 +4,7 @@ if __name__ == "__main__":
     for pps in [1, 2, 3]:
         for wpiwp in [bool(0), bool(1)]:
             data_set_name, product_name = "", ""
-            for data_setting in [1, 2, 3]:
+            for data_setting in [2]:
                 if data_setting == 1:
                     data_set_name = "email_directed"
                 elif data_setting == 2:
@@ -56,7 +56,7 @@ if __name__ == "__main__":
                                         exp_profit_list[kk][int(i)] -= seed_cost_dict[i]
                             notban_seed_set = [set(graph_dict.keys()) for _ in range(num_product)]
                             exp_profit_list, notban_seed_set = ssng_main.updateExpectProfitList([set() for _ in range(num_product)], notban_seed_set, exp_profit_list, 0.0,
-                                                                                                [set() for _ in range(num_product)], wallet_list,
+                                                                                                [set() for _ in range(num_product)], [{} for _ in range(num_product)], wallet_list,
                                                                                                 [[1.0 for _ in range(num_node)] for _ in range(num_product)])
 
                             result = []
@@ -68,10 +68,11 @@ if __name__ == "__main__":
                             an_promote_list = [[] for _ in range(sample_number)]
 
                             for sample_count in range(sample_number):
-                                print("pps = " + str(pps) + ", wpiwp = " + str(wpiwp) + ", data_set_name = " + data_set_name +
+                                print("pp_strategy = " + str(pps) + ", wpiwp = " + str(wpiwp) + ", data_set_name = " + data_set_name +
                                       ", product_name = " + product_name + ", budget = " + str(bud) + ", sample_count = " + str(sample_count))
                                 now_profit, now_budget = 0.0, 0.0
                                 seed_set, activated_node_set = [set() for _ in range(num_product)], [set() for _ in range(num_product)]
+                                activated_edge_set = [{} for _ in range(num_product)]
                                 personal_prob_list = [[1.0 for _ in range(num_node)] for _ in range(num_product)]
 
                                 current_wallet_list = copy.deepcopy(wallet_list)
@@ -85,8 +86,8 @@ if __name__ == "__main__":
                                     for kk in range(num_product):
                                         if mep_i_node in nban_seed_set[kk]:
                                             nban_seed_set[kk].remove(mep_i_node)
-                                    seed_set, activated_node_set, an_number, current_profit, current_wallet_list, personal_prob_list = \
-                                        dnic_main.insertSeedIntoSeedSet(mep_k_prod, mep_i_node, seed_set, activated_node_set, current_wallet_list, personal_prob_list)
+                                    seed_set, activated_node_set, activated_edge_set, an_number, current_profit, current_wallet_list, personal_prob_list = \
+                                        dnic_main.insertSeedIntoSeedSet(mep_k_prod, mep_i_node, seed_set, activated_node_set, activated_edge_set, current_wallet_list, personal_prob_list)
 
                                     pro_k_list[mep_k_prod] += round(current_profit, 4)
                                     bud_k_list[mep_k_prod] += seed_cost_dict[mep_i_node]
@@ -94,7 +95,7 @@ if __name__ == "__main__":
                                     now_budget += seed_cost_dict[mep_i_node]
                                     an_promote_list[sample_count].append([mep_k_prod, mep_i_node, an_number, round(current_profit, 4), seed_cost_dict[mep_i_node], iniG.getNodeOutDegree(mep_i_node)])
 
-                                    exp_profit_list, nban_seed_set = ssng_main.updateExpectProfitList(seed_set, nban_seed_set, exp_profit_list, now_budget, activated_node_set, current_wallet_list, personal_prob_list)
+                                    exp_profit_list, nban_seed_set = ssng_main.updateExpectProfitList(seed_set, nban_seed_set, exp_profit_list, now_budget, activated_node_set, activated_edge_set, current_wallet_list, personal_prob_list)
                                     mep_k_prod, mep_i_node = ssng_main.getMostValuableSeed(exp_profit_list, nban_seed_set)
 
                                 # -- result --
@@ -130,7 +131,7 @@ if __name__ == "__main__":
                                     fw = open("result/mngic_pps" + str(pps) + "_wpiwp" * wpiwp + "/" +
                                               data_set_name + "_" + product_name + "/" +
                                               "b" + str(bud) + "_i" + str(sample_count + 1) + ".txt", 'w')
-                                    fw.write("mngic , pps = " + str(pps) + ", total_budget = " + str(bud) + ", wpiwp = " + str(wpiwp) + "\n" +
+                                    fw.write("mngic , pp_strategy = " + str(pps) + ", total_budget = " + str(bud) + ", wpiwp = " + str(wpiwp) + "\n" +
                                              "data_set_name = " + data_set_name + ", product_name = " + product_name + "\n" +
                                              "total_budget = " + str(bud) + ", sample_count = " + str(sample_count + 1) + "\n" +
                                              "avg_profit = " + str(round(avg_profit / (sample_count + 1), 4)) +
