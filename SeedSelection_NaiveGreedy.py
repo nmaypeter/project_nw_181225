@@ -14,8 +14,8 @@ class SeedSelectionNG:
         ### total_bud: (int) the budget to select seed
         ### num_node: (int) the number of nodes
         ### num_product: (int) the kinds of products
-        ### pp_strategy: (int) the strategy to upadate personal prob.
-        ### wpiwp: (bool) if infect when only after buying, then False
+        ### pps: (int) the strategy to update personal prob.
+        ### wpiwp: (bool) whether passing the information without purchasing
         self.graph_dict = g_dict
         self.seed_cost_dict = s_c_dict
         self.product_list = prod_list
@@ -230,7 +230,7 @@ if __name__ == "__main__":
         mep_k_prod, mep_i_node = ssng.getMostValuableSeed(exp_profit_list, nban_seed_set)
 
     # -- result --
-    now_num_k_seed, now_num_k_an = [len(k) for k in seed_set], [len(k) for k in activated_node_set]
+    now_num_k_seed, now_num_k_an = [len(kk) for kk in seed_set], [len(kk) for kk in activated_node_set]
     result.append([round(now_profit, 4), round(now_budget, 4), now_num_k_seed, now_num_k_an, seed_set])
     avg_profit += now_profit
     avg_budget += now_budget
