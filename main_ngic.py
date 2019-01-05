@@ -51,9 +51,9 @@ if __name__ == "__main__":
 
                             exp_profit_list = [[0 for _ in range(num_node)] for _ in range(num_product)]
                             for kk in range(num_product):
-                                for i in seed_cost_dict:
-                                    if i not in graph_dict:
-                                        exp_profit_list[kk][int(i)] -= seed_cost_dict[i]
+                                for ii in seed_cost_dict:
+                                    if ii not in graph_dict:
+                                        exp_profit_list[kk][int(ii)] -= seed_cost_dict[ii]
                             notban_seed_set = [set(graph_dict.keys()) for _ in range(num_product)]
                             exp_profit_list, notban_seed_set = ssng_main.updateExpectProfitList([set() for _ in range(num_product)], notban_seed_set, exp_profit_list, 0.0,
                                                                                                 [set() for _ in range(num_product)], [{} for _ in range(num_product)], wallet_list,
@@ -99,7 +99,7 @@ if __name__ == "__main__":
                                     mep_k_prod, mep_i_node = ssng_main.getMostValuableSeed(exp_profit_list, nban_seed_set)
 
                                 # -- result --
-                                now_num_k_seed, now_num_k_an = [len(k) for k in seed_set], [len(k) for k in activated_node_set]
+                                now_num_k_seed, now_num_k_an = [len(kk) for kk in seed_set], [len(kk) for kk in activated_node_set]
                                 result.append([round(now_profit, 4), round(now_budget, 4), now_num_k_seed, now_num_k_an, seed_set])
                                 avg_profit += now_profit
                                 avg_budget += now_budget
@@ -113,12 +113,12 @@ if __name__ == "__main__":
                                     mrss_pro.append(now_profit)
                                     mrss_set.append(seed_set)
                                 else:
-                                    i = mrss_set.index(seed_set)
-                                    mrss_times[i] += 1
-                                    mrss_pro[i] += now_profit
-                                i = mrss_set.index(seed_set)
-                                if (mrss_times[i] > mrss[0]) or ((mrss_times[i] == mrss[0]) and (mrss_pro[i] / mrss_times[i]) > (mrss[1] / mrss[0])):
-                                    mrss = [mrss_times[i], mrss_pro[i], seed_set]
+                                    ii = mrss_set.index(seed_set)
+                                    mrss_times[ii] += 1
+                                    mrss_pro[ii] += now_profit
+                                ii = mrss_set.index(seed_set)
+                                if (mrss_times[ii] > mrss[0]) or ((mrss_times[ii] == mrss[0]) and (mrss_pro[ii] / mrss_times[ii]) > (mrss[1] / mrss[0])):
+                                    mrss = [mrss_times[ii], mrss_pro[ii], seed_set]
 
                                 how_long = round(time.time() - start_time, 2)
                                 print("total_time: " + str(how_long) + "sec")
