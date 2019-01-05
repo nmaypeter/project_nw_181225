@@ -16,7 +16,7 @@ class DiffusionNormalIC:
         ### prod_list[kk(int)][]: (float2)
         ### num_node: (int) the number of nodes
         ### num_product: (int) the kinds of products
-        ### pps: (int) the strategy to update personal prob.
+        ### pp_strategy: (int) the strategy to update personal prob.
         ### wpiwp: (bool) whether passing the information without purchasing
         self.graph_dict = g_dict
         self.seed_cost_dict = s_c_dict
@@ -57,7 +57,7 @@ class DiffusionNormalIC:
 
         return pp_list
 
-    def getSeedExpectProfit(self, k_prod, i_node, s_set, a_n_set_k, w_list, pp_list_k):
+    def getSeedExpectProfit(self, k_prod, i_node, s_set, a_n_set_k, a_e_set_k, w_list, pp_list_k):
         # -- calculate the expected profit for single node when it's chosen as a seed --
         ### try_a_n_list: (list) the set to store the nodes may be activated for kk-products
         ### try_a_n_list[][0]: (str) the receiver when ii is ancestor
@@ -66,6 +66,7 @@ class DiffusionNormalIC:
         ### ep: (float2) the expected profit
         a_n_set_k = copy.deepcopy(a_n_set_k)
         a_n_set_k.add(i_node)
+        a_e_set_k = copy.deepcopy(a_e_set_k)
         try_a_n_list = []
         s_total_set = set()
         for k in range(self.num_product):
@@ -82,6 +83,8 @@ class DiffusionNormalIC:
             if not (out not in a_n_set_k):
                 continue
             if not (out not in s_total_set):
+                continue
+            if not (i_node not in a_e_set_k or out not in a_e_set_k[i_node]):
                 continue
             if not (w_list[int(out)] > self.product_list[k_prod][2]):
                 continue
@@ -111,6 +114,8 @@ class DiffusionNormalIC:
                     continue
                 if not (outw not in s_total_set):
                     continue
+                if not (i_node not in a_e_set_k or outw not in a_e_set_k[i_node]):
+                    continue
                 if not (w_list[int(outw)] > self.product_list[k_prod][2]):
                     continue
                 if not (pp_list_k[int(outw)] > 0):
@@ -126,7 +131,7 @@ class DiffusionNormalIC:
 
         return round(ep, 4)
 
-    def insertSeedIntoSeedSet(self, k_prod, i_nodet, s_set, a_n_set, w_list, pp_list):
+    def insertSeedIntoSeedSet(self, k_prod, i_nodet, s_set, a_n_set, a_e_set, w_list, pp_list):
         # -- insert the seed with maximum expected profit into seed set --
         # -- insert the seed into seed set --
         # -- insert the seed into a_n_set --
@@ -160,12 +165,18 @@ class DiffusionNormalIC:
                 continue
             if not (out not in s_total_set):
                 continue
+            if not (i_nodet not in a_e_set[k_prod] or out not in a_e_set[k_prod][i_nodet]):
+                continue
             if not (w_list[int(out)] > self.product_list[k_prod][2]):
                 continue
             if not (pp_list[k_prod][int(out)] > 0):
                 continue
             if random.random() <= float(outdict[out]):
                 try_a_n_list.append(out)
+                if i_nodet in a_e_set[k_prod]:
+                    a_e_set[k_prod][i_nodet].add(out)
+                else:
+                    a_e_set[k_prod][i_nodet] = {out}
 
         # -- activate the candidate nodes actually --
         dnic_d = DiffusionNormalIC(self.graph_dict, self.seed_cost_dict, self.product_list, self.pps, self.wpiwp)
@@ -198,14 +209,20 @@ class DiffusionNormalIC:
                         continue
                     if not (outw not in s_total_set):
                         continue
+                    if not (i_nodet not in a_e_set[k_prod] or outw not in a_e_set[k_prod][i_nodet]):
+                        continue
                     if not (w_list[int(outw)] > self.product_list[k_prod][2]):
                         continue
                     if not (pp_list[k_prod][int(outw)] > 0):
                         continue
                     if random.random() <= float(outdictw[outw]):
                         try_a_n_list.append(outw)
+                        if i_nodet in a_e_set[k_prod]:
+                            a_e_set[k_prod][i_nodet].add(outw)
+                        else:
+                            a_e_set[k_prod][i_nodet] = {outw}
 
-        return s_set, a_n_set, an_number, cur_profit, w_list, pp_list
+        return s_set, a_n_set, a_e_set, an_number, cur_profit, w_list, pp_list
 
 
 class Evaluation:
@@ -220,7 +237,7 @@ class Evaluation:
         ### prod_list[kk(int)][]: (float2)
         ### num_node: (int) the number of nodes
         ### num_product: (int) the kinds of products
-        ### pps: (int) the strategy to update personal prob.
+        ### pp_strategy: (int) the strategy to update personal prob.
         ### wpiwp: (bool) whether passing the information without purchasing
         self.graph_dict = g_dict
         self.seed_cost_dict = s_c_dict
