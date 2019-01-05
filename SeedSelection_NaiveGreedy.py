@@ -25,15 +25,25 @@ class SeedSelectionNG:
         self.pps = pps
         self.wpiwp = wpiwp
 
-    def updateExpectProfitList(self, s_set, nb_seed_set, ep_list, cur_bud, a_n_set, a_e_set, w_list, pp_list):
+    def getAllExpectProfitList(self, s_set, nb_seed_set, ep_list, cur_bud, a_n_set, a_e_set, w_list, pp_list):
         # -- calculate expected profit for all combinations of nodes and products --
         ### ban_set: (list) the set to record the node that will be banned
+        ### involved_s_set: (list)
+        ### involved_s_set[k]: (dict)
+        ### involved_s_set[k][node2]: (set) the set to record the seeds that involve node2
         ban_set = [set() for _ in range(self.num_product)]
+        involved_s_set = [{} for _ in range(self.num_product)]
         dnic_u = DiffusionNormalIC(self.graph_dict, self.seed_cost_dict, self.product_list, self.pps, self.wpiwp)
 
         for k in range(self.num_product):
             for i in nb_seed_set[k]:
-                ep_list[k][int(i)] = dnic_u.getSeedExpectProfit(k, i, s_set, a_n_set[k], a_e_set[k], w_list, pp_list[k])
+                ep, involve_set = dnic_u.getSeedExpectProfit(k, i, s_set, a_n_set[k], a_e_set[k], w_list, pp_list[k])
+                ep_list[k][int(i)] = ep
+                for node2 in involve_set:
+                    if node2 in involved_s_set[k]:
+                        involved_s_set[k][node2].add(i)
+                    else:
+                        involved_s_set[k][node2] = {i}
 
                 # -- the cost of seed cannot exceed the budget --
                 if self.seed_cost_dict[i] + cur_bud > self.total_budget:
@@ -41,6 +51,44 @@ class SeedSelectionNG:
                     continue
 
                 # -- the expected profit cannot be negative --
+                if ep_list[k][int(i)] <= 0:
+                    ban_set[k].add(i)
+                    continue
+
+        # -- remove the impossible seeds from nb_seed_set
+        for k in range(self.num_product):
+            for i in ban_set[k]:
+                if i in nb_seed_set[k]:
+                    nb_seed_set[k].remove(i)
+
+        return ep_list, nb_seed_set, involved_s_set
+
+    def updateExpectProfitList(self, s_set, nb_seed_set, involved_s_set, cur_cus_set, ep_list, cur_bud, a_n_set, a_e_set, w_list, pp_list):
+        # -- calculate expected profit for all combinations of nodes and products --
+        ### ban_set: (list) the set to record the node that will be banned
+        ### updated_list: (list) the set to record the node will be updated
+        ban_set, updated_list = [set() for _ in range(self.num_product)], [set() for _ in range(self.num_product)]
+        dnic_u = DiffusionNormalIC(self.graph_dict, self.seed_cost_dict, self.product_list, self.pps, self.wpiwp)
+
+        for k in range(self.num_product):
+            for c in cur_cus_set[k]:
+                for i in involved_s_set[k][c]:
+                    updated_list[k].add(i)
+
+        for k in range(self.num_product):
+            for i in updated_list[k]:
+                ep_list[k][int(i)] = dnic_u.getSeedExpectProfit(k, i, s_set, a_n_set[k], a_e_set[k], w_list, pp_list[k])[0]
+
+                # -- the cost of seed cannot exceed the budget --
+                if self.seed_cost_dict[i] + cur_bud > self.total_budget:
+                    ban_set[k].add(i)
+                    continue
+
+                # -- the expected profit cannot be negative --
+                # print(ep_list)
+                # print(ep_list[k])
+                # print(ep_list[k][int(i)])
+                # print(k, i)
                 if ep_list[k][int(i)] <= 0:
                     ban_set[k].add(i)
                     continue
@@ -74,7 +122,7 @@ if __name__ == "__main__":
     data_set_name = "email_undirected"
     product_name = "r1p3n1"
     total_budget = 1
-    pp_strategy = 2
+    pp_strategy = 1
     whether_passing_information_without_purchasing = bool(0)
 
     iniG = IniGraph(data_set_name)
@@ -96,23 +144,23 @@ if __name__ == "__main__":
     ssng = SeedSelectionNG(graph_dict, seed_cost_dict, product_list, total_budget, pp_strategy, whether_passing_information_without_purchasing)
     dnic = DiffusionNormalIC(graph_dict, seed_cost_dict, product_list, pp_strategy, whether_passing_information_without_purchasing)
 
-    ### ep_list: (list) the list of expected profit for all combinations of nodes and products
-    ### ep_list[kk]: (list) the list of expected profit for kk-product
-    ### ep_list[kk][ii]: (float4) the expected profit for ii-node for kk-product
-    exp_profit_list = [[0 for _ in range(num_node)] for _ in range(num_product)]
-    for kk in range(num_product):
-        for ii in seed_cost_dict:
-            if ii not in graph_dict:
-                exp_profit_list[kk][int(ii)] -= seed_cost_dict[ii]
+    ### personal_prob_list: (list) the list of personal prob. for all combinations of nodes and products
+    ### personal_prob_list[kk]: (list) the list of personal prob. for kk-product
+    ### personal_prob_list[kk][ii]: (float2) the personal prob. for ii-node for kk-product
+    personal_prob_list = dnic.getPersonalProbList(wallet_list)
     ### notban_seed_set: (list) the possible seed set
     ### notban_seed_set[kk]: (set) the possible seed set for kk-product
+    ### exp_profit_list: (list) the list of expected profit for all combinations of nodes and products
+    ### exp_profit_list[kk]: (list) the list of expected profit for kk-product
+    ### exp_profit_list[kk][ii]: (float4) the expected profit for ii-node for kk-product
     print(round(time.time() - temp, 2))
-    print("updateExpectProfitList")
+    print("getAllExpectProfitList")
     temp = time.time()
     notban_seed_set = [set(graph_dict.keys()) for _ in range(num_product)]
-    exp_profit_list, notban_seed_set = ssng.updateExpectProfitList([set() for _ in range(num_product)], notban_seed_set, exp_profit_list, 0.0,
-                                                                   [set() for _ in range(num_product)], [{} for _ in range(num_product)], wallet_list,
-                                                                   [[1.0 for _ in range(num_node)] for _ in range(num_product)])
+    exp_profit_list, notban_seed_set, involved_seeds_set = ssng.getAllExpectProfitList([set() for _ in range(num_product)], notban_seed_set,
+                                                                                       [[0 for _ in range(num_node)] for _ in range(num_product)], 0.0,
+                                                                                       [set() for _ in range(num_product)], [{} for _ in range(num_product)], wallet_list,
+                                                                                       personal_prob_list)
 
     ### result: (list) [profit, budget, seed number per product, customer number per product, seed set] in this execution_time
     result = []
@@ -139,12 +187,9 @@ if __name__ == "__main__":
     ### activated_edge_set[kk]: (dict) the activated edge set for kk-product
     ### activated_edge_set[kk][node1]: (set) the activated edge set of node1 for kk-product
     activated_edge_set = [{} for _ in range(num_product)]
-    ### personal_prob_list: (list) the list of personal prob. for all combinations of nodes and products
-    ### personal_prob_list[kk]: (list) the list of personal prob. for kk-product
-    ### personal_prob_list[kk][ii]: (float2) the personal prob. for ii-node for kk-product
-    personal_prob_list = [[1.0 for _ in range(num_node)] for _ in range(num_product)]
 
     current_wallet_list = copy.deepcopy(wallet_list)
+    per_prob_list = copy.deepcopy(personal_prob_list)
     exp_profit_list = copy.deepcopy(exp_profit_list)
     nban_seed_set = copy.deepcopy(notban_seed_set)
 
@@ -164,8 +209,8 @@ if __name__ == "__main__":
         for kk in range(num_product):
             if mep_i_node in nban_seed_set[kk]:
                 nban_seed_set[kk].remove(mep_i_node)
-        seed_set, activated_node_set, activated_edge_set, an_number, current_profit, current_wallet_list, personal_prob_list = \
-            dnic.insertSeedIntoSeedSet(mep_k_prod, mep_i_node, seed_set, activated_node_set, activated_edge_set, current_wallet_list, personal_prob_list)
+        seed_set, activated_node_set, activated_edge_set, an_number, cur_customer_set, current_profit, current_wallet_list, per_prob_list = \
+            dnic.insertSeedIntoSeedSet(mep_k_prod, mep_i_node, seed_set, activated_node_set, activated_edge_set, current_wallet_list, per_prob_list)
 
         pro_k_list[mep_k_prod] += round(current_profit, 4)
         bud_k_list[mep_k_prod] += seed_cost_dict[mep_i_node]
@@ -176,7 +221,8 @@ if __name__ == "__main__":
         print(round(time.time() - temp, 2))
         print("updateExpectProfitList")
         temp = time.time()
-        exp_profit_list, nban_seed_set = ssng.updateExpectProfitList(seed_set, nban_seed_set, exp_profit_list, now_budget, activated_node_set, activated_edge_set, current_wallet_list, personal_prob_list)
+        exp_profit_list, nban_seed_set = ssng.updateExpectProfitList(seed_set, nban_seed_set, involved_seeds_set, cur_customer_set, exp_profit_list,
+                                                                     now_budget, activated_node_set, activated_edge_set, current_wallet_list, per_prob_list)
 
         print(round(time.time() - temp, 2))
         print("getMostValuableSeed")
