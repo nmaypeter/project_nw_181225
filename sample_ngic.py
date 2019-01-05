@@ -47,10 +47,10 @@ if __name__ == "__main__":
                             dnic_sample = DiffusionNormalIC(graph_dict, seed_cost_dict, product_list, pps, wpiwp)
 
                             exp_profit_list = [[0 for _ in range(num_node)] for _ in range(num_product)]
-                            for k in range(num_product):
+                            for kk in range(num_product):
                                 for i in seed_cost_dict:
                                     if i not in graph_dict:
-                                        exp_profit_list[k][int(i)] -= seed_cost_dict[i]
+                                        exp_profit_list[kk][int(i)] -= seed_cost_dict[i]
                             notban_seed_set = [set(graph_dict.keys()) for _ in range(num_product)]
                             exp_profit_list, notban_seed_set = ssng_sample.updateExpectProfitList([set() for _ in range(num_product)], notban_seed_set, exp_profit_list, 0.0,
                                                                                                   [set() for _ in range(num_product)], [{} for _ in range(num_product)], wallet_list,
@@ -75,9 +75,9 @@ if __name__ == "__main__":
                             while now_budget < bud and mep_i_node != '-1':
                                 class_count.append([mep_k_prod, mep_i_node, current_wallet_list[int(mep_i_node)]])
 
-                                for k in range(num_product):
-                                    if mep_i_node in nban_seed_set[k]:
-                                        nban_seed_set[k].remove(mep_i_node)
+                                for kk in range(num_product):
+                                    if mep_i_node in nban_seed_set[kk]:
+                                        nban_seed_set[kk].remove(mep_i_node)
                                 seed_set, activated_node_set, activated_edge_set, an_number, current_profit, current_wallet_list, personal_prob_list = \
                                     dnic_sample.insertSeedIntoSeedSet(mep_k_prod, mep_i_node, seed_set, activated_node_set, activated_edge_set, current_wallet_list, personal_prob_list)
 
@@ -127,20 +127,20 @@ if __name__ == "__main__":
 
                             ap1, ap2 = ["" for _ in range(num_product)], ["" for _ in range(num_product)]
                             for ap in an_promote_list:
-                                for k in range(num_product):
-                                    if ap[0] == k:
-                                        ap1[k] = ap1[k] + str(ap[2]) + "\t"
-                                        ap2[k] = ap2[k] + str(round(ap[3], 2)) + "\t"
+                                for kk in range(num_product):
+                                    if ap[0] == kk:
+                                        ap1[kk] = ap1[kk] + str(ap[2]) + "\t"
+                                        ap2[kk] = ap2[kk] + str(round(ap[3], 2)) + "\t"
                                     else:
-                                        ap1[k] = ap1[k] + str(0) + "\t"
-                                        ap2[k] = ap2[k] + str(0) + "\t"
+                                        ap1[kk] = ap1[kk] + str(0) + "\t"
+                                        ap2[kk] = ap2[kk] + str(0) + "\t"
                             # -- nodes for products --
-                            for k in range(num_product):
-                                fw.write(str(ap1[k]) + "\n")
+                            for kk in range(num_product):
+                                fw.write(str(ap1[kk]) + "\n")
                             fw.write("\n" * 12)
                             # -- profit for products --
-                            for k in range(num_product):
-                                fw.write(str(ap2[k]) + "\n")
+                            for kk in range(num_product):
+                                fw.write(str(ap2[kk]) + "\n")
 
                             print("total time: " + str(how_long) + "sec")
                             fw.close()
