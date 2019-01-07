@@ -11,8 +11,8 @@ if __name__ == "__main__":
                     data_set_name = "email_undirected"
                 elif data_setting == 3:
                     data_set_name = "WikiVote_directed"
-                for prod_setting in [1, 2, 3]:
-                    for prod_setting2 in [1, 2, 3, 4]:
+                for prod_setting in [1, 2]:
+                    for prod_setting2 in [1, 2, 3]:
                         if prod_setting == 1:
                             if prod_setting2 == 1:
                                 product_name = "r1p3n1"
@@ -82,8 +82,9 @@ if __name__ == "__main__":
                                     dnic_sample.insertSeedIntoSeedSet(mep_k_prod, mep_i_node, seed_set, activated_node_set, activated_edge_set, current_wallet_list, personal_prob_list)
 
                                 for num in range(10):
-                                    class_accumulate_num_node_list[num].append(len(iniG.getNodeClassList(iniP.getProductList()[1], current_wallet_list)[0][num]))
-                                    class_accumulate_wallet[num].append(iniG.getNodeClassList(iniP.getProductList()[1], current_wallet_list)[1][num])
+                                    class_accumulate_num_node_list[num].append(len(iniG.getNodeClassList(IniProduct("r1p3n" + str(prod_setting)).getProductList()[1], current_wallet_list)[0][num]))
+                                    class_accumulate_wallet[num].append(iniG.getNodeClassList(IniProduct("r1p3n" + str(prod_setting)).getProductList()[1], current_wallet_list)[1][num])
+                                
                                 now_profit += round(current_profit, 4)
                                 now_budget += seed_cost_dict[mep_i_node]
                                 an_promote_list.append([mep_k_prod, mep_i_node, an_number, round(current_profit, 4), seed_cost_dict[mep_i_node], iniG.getNodeOutDegree(mep_i_node)])
