@@ -102,31 +102,32 @@ class IniGraph:
 
     def getWalletList(self, prod_name):
         # -- get wallet_list from file --
-        wallet_list = []
+        w_list = []
         with open("data/" + self.data_name + "/wallet_r" + list(prod_name)[list(prod_name).index('r') + 1] +
                   "p" + list(prod_name)[list(prod_name).index('p') + 1] +
                   "n" + list(prod_name)[list(prod_name).index('n') + 1] + ".txt") as f:
             for line in f:
                 (node, wallet) = line.split()
-                wallet_list.append(float(wallet))
+                w_list.append(float(wallet))
         f.close()
-        return wallet_list
+
+        return w_list
 
     @staticmethod
-    def getNodeClassList(upper, wallet_list):
+    def getNodeClassList(upper, w_list):
         class_acc_node_list, class_acc_wallet = [[] for _ in range(10)], [0.0 for _ in range(10)]
-        for i in range(len(wallet_list)):
-            if wallet_list[i] == 0:
+        for i in range(len(w_list)):
+            if w_list[i] == 0:
                 class_acc_node_list[0].append(str(i))
-                class_acc_wallet[0] += wallet_list[i]
-            for num in range(10):
-                if upper * num / 10 < wallet_list[i] <= upper * (num + 1) / 10:
-                    class_acc_node_list[num].append(str(i))
-                    class_acc_wallet[num] += wallet_list[i]
+                class_acc_wallet[0] += w_list[i]
+            for n in range(10):
+                if upper * n / 10 < w_list[i] <= upper * (n + 1) / 10:
+                    class_acc_node_list[n].append(str(i))
+                    class_acc_wallet[n] += w_list[i]
                     continue
 
-        for num in range(10):
-            class_acc_wallet[num] = round(class_acc_wallet[num], 2)
+        for n in range(10):
+            class_acc_wallet[n] = round(class_acc_wallet[n], 2)
 
         return class_acc_node_list, class_acc_wallet
 
@@ -198,7 +199,7 @@ class IniProduct:
 if __name__ == "__main__":
     ### data_set_name: (str) the dataset
     ### product_name: (str) the product dataset
-    data_set_name = "email_directed"
+    data_set_name = "email_undirected"
     product_name = "r1p3n1"
 
     iniG = IniGraph(data_set_name)
@@ -220,6 +221,9 @@ if __name__ == "__main__":
     # graph_dict = iniG.constructGraphDict()
     # product_list = iniP.getProductList()[0]
     # wallet_list = iniG.getWalletList(product_name)
+    ### -- email_directed: total_wallet = 811.57 --
+    ### -- email_undirected: total_wallet = 811.57 --
+    ### -- WikiVote_directed: total_wallet = 5995.88 --
 
     # class_accumulate_node_list, class_accumulate_wallet = iniG.getNodeClassList(sum_price, wallet_list)
     # # -- number of nodes of each class --
@@ -228,3 +232,15 @@ if __name__ == "__main__":
     # # -- accumulative budget for each class --
     # for num in range(10):
     #     print(str(round(sum_price * (num + 1) / 10, 2)) + "\t" + str(class_accumulate_wallet[num]))
+
+    # # -- display all nodes and their wallet for class --
+    # for num in range(10):
+    #     sssi = ""
+    #     ssss = ""
+    #     for ii in class_accumulate_node_list[num]:
+    #         sssi = sssi + str(ii) + "\t"
+    #         ssss = ssss + str(wallet_list[int(ii)]) + "\t"
+    #     print(sssi)
+    #     print(ssss)
+    #     print("\n")
+    
