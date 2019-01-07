@@ -11,8 +11,8 @@ if __name__ == "__main__":
                     data_set_name = "email_undirected"
                 elif data_setting == 3:
                     data_set_name = "WikiVote_directed"
-                for prod_setting in [1, 2, 3]:
-                    for prod_setting2 in [1, 2, 3, 4]:
+                for prod_setting in [1, 2]:
+                    for prod_setting2 in [1, 2, 3]:
                         if prod_setting == 1:
                             if prod_setting2 == 1:
                                 product_name = "r1p3n1"
@@ -71,7 +71,7 @@ if __name__ == "__main__":
                                 current_wallet_list = copy.deepcopy(wallet_list)
                                 nban_set = copy.deepcopy(notban_set)
 
-                                mep_k_prod, mep_i_node = ssr.selectRandomSeed(nban_set)
+                                mep_k_prod, mep_i_node = ssr_main.selectRandomSeed(nban_set)
 
                                 # -- main --
                                 while now_budget < bud and mep_i_node != '-1':
@@ -79,7 +79,7 @@ if __name__ == "__main__":
                                         if mep_i_node in nban_set[k]:
                                             nban_set[k].remove(mep_i_node)
                                     seed_set, activated_node_set, activated_edge_set, an_number, current_profit, current_wallet_list, personal_prob_list = \
-                                        dnic.insertSeedIntoSeedSet(mep_k_prod, mep_i_node, seed_set, activated_node_set, activated_edge_set, current_wallet_list, personal_prob_list)
+                                        dnic_main.insertSeedIntoSeedSet(mep_k_prod, mep_i_node, seed_set, activated_node_set, activated_edge_set, current_wallet_list, personal_prob_list)
 
                                     pro_k_list[mep_k_prod] += round(current_profit, 4)
                                     bud_k_list[mep_k_prod] += seed_cost_dict[mep_i_node]
@@ -87,8 +87,8 @@ if __name__ == "__main__":
                                     now_budget += seed_cost_dict[mep_i_node]
                                     an_promote_list[sample_count].append([mep_k_prod, mep_i_node, an_number, round(current_profit, 4), seed_cost_dict[mep_i_node], iniG.getNodeOutDegree(mep_i_node)])
 
-                                    nban_set = ssr.updateNotbanSet(nban_set, now_budget)
-                                    mep_k_prod, mep_i_node = ssr.selectRandomSeed(nban_set)
+                                    nban_set = ssr_main.updateNotbanSet(nban_set, now_budget)
+                                    mep_k_prod, mep_i_node = ssr_main.selectRandomSeed(nban_set)
 
                                 # -- result --
                                 now_num_k_seed, now_num_k_an = [len(kk) for kk in seed_set], [len(kk) for kk in activated_node_set]
