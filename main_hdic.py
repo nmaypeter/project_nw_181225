@@ -11,8 +11,8 @@ if __name__ == "__main__":
                     data_set_name = "email_undirected"
                 elif data_setting == 3:
                     data_set_name = "WikiVote_directed"
-                for prod_setting in [1, 2, 3]:
-                    for prod_setting2 in [1, 2, 3, 4]:
+                for prod_setting in [1, 2]:
+                    for prod_setting2 in [1, 2, 3]:
                         if prod_setting == 1:
                             if prod_setting2 == 1:
                                 product_name = "r1p3n1"
@@ -46,11 +46,11 @@ if __name__ == "__main__":
                         for bud in range(1, total_budget + 1):
                             start_time = time.time()
 
-                            ssng_main = SeedSelectionHD(graph_dict, seed_cost_dict, product_list, bud, pps, wpiwp)
+                            sshd_main = SeedSelectionHD(graph_dict, seed_cost_dict, product_list, bud, pps, wpiwp)
                             dnic_main = DiffusionNormalIC(graph_dict, seed_cost_dict, product_list, pps, wpiwp)
 
-                            degree_dict_o = sshd_sample.constructDegreeDict(data_set_name)
-                            mep_i_node, degree_dict_o = sshd_sample.getHighDegreeNode(degree_dict_o)
+                            degree_dict_o = sshd_main.constructDegreeDict(data_set_name)
+                            mep_i_node, degree_dict_o = sshd_main.getHighDegreeNode(degree_dict_o)
 
                             result = []
                             avg_profit, avg_budget = 0.0, 0.0
@@ -72,13 +72,13 @@ if __name__ == "__main__":
                                 degree_dict = copy.deepcopy(degree_dict_o)
 
                                 while seed_cost_dict[mep_i_node] > total_budget or degree_dict == {}:
-                                    mep_i_node, degree_dict = sshd_sample.getHighDegreeNode(degree_dict)
+                                    mep_i_node, degree_dict = sshd_main.getHighDegreeNode(degree_dict)
 
                                 # -- main --
                                 while now_budget < bud and mep_i_node != '-1':
                                     mep_k_prod = choice([kk for kk in range(num_product)])
-                                    seed_set, activated_node_set, an_number, current_profit, current_wallet_list, personal_prob_list = \
-                                        dnic.insertSeedIntoSeedSet(mep_k_prod, mep_i_node, seed_set, activated_node_set, current_wallet_list, personal_prob_list)
+                                    seed_set, activated_node_set, activated_edge_set, an_number, current_profit, current_wallet_list, personal_prob_list = \
+                                        dnic_main.insertSeedIntoSeedSet(mep_k_prod, mep_i_node, seed_set, activated_node_set, activated_edge_set, current_wallet_list, personal_prob_list)
 
                                     pro_k_list[mep_k_prod] += round(current_profit, 4)
                                     bud_k_list[mep_k_prod] += seed_cost_dict[mep_i_node]
@@ -86,9 +86,9 @@ if __name__ == "__main__":
                                     now_budget += seed_cost_dict[mep_i_node]
                                     an_promote_list[sample_count].append([mep_k_prod, mep_i_node, an_number, round(current_profit, 4), seed_cost_dict[mep_i_node], iniG.getNodeOutDegree(mep_i_node)])
 
-                                    mep_i_node, degree_dict = sshd_sample.getHighDegreeNode(degree_dict)
+                                    mep_i_node, degree_dict = sshd_main.getHighDegreeNode(degree_dict)
                                     while seed_cost_dict[mep_i_node] > total_budget or degree_dict == {}:
-                                        mep_i_node, degree_dict = sshd_sample.getHighDegreeNode(degree_dict)
+                                        mep_i_node, degree_dict = sshd_main.getHighDegreeNode(degree_dict)
                                         # -- result --
                                         now_num_k_seed, now_num_k_an = [len(kk) for kk in seed_set], [len(kk) for kk in activated_node_set]
                                         result.append([round(now_profit, 4), round(now_budget, 4), now_num_k_seed, now_num_k_an, seed_set])
