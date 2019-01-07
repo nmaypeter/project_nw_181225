@@ -11,8 +11,8 @@ if __name__ == "__main__":
                     data_set_name = "email_undirected"
                 elif data_setting == 3:
                     data_set_name = "WikiVote_directed"
-                for prod_setting in [1, 2, 3]:
-                    for prod_setting2 in [1, 2, 3, 4]:
+                for prod_setting in [1, 2]:
+                    for prod_setting2 in [1, 2, 3]:
                         if prod_setting == 1:
                             if prod_setting2 == 1:
                                 product_name = "r1p3n1"
