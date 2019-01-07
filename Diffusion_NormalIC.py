@@ -96,7 +96,7 @@ class DiffusionNormalIC:
         a_n_set_k = copy.deepcopy(a_n_set_k)
         a_n_set_k.add(i_node)
         a_e_set_k = copy.deepcopy(a_e_set_k)
-        try_a_n_list, involve_set = [], set()
+        try_a_n_list = []
         s_total_set = set()
         for k in range(self.num_product):
             s_total_set = s_total_set.union(s_set[k])
@@ -127,8 +127,6 @@ class DiffusionNormalIC:
             # -- add the receiver of node into try_a_n_list --
             # -- notice: prevent the node from owing no receiver --
             a_n_set_k.add(out)
-            if temp_ep >= 0.00001:
-                involve_set.add(out)
             try_a_n_list.append([out, i_prob, i_prob])
 
         while len(try_a_n_list) > 0:
@@ -160,11 +158,9 @@ class DiffusionNormalIC:
                 # -- add the receiver of node into try_a_n_list --
                 # -- notice: prevent the node from owing no receiver --
                 a_n_set_k.add(outw)
-                if temp_ep >= 0.00001:
-                    involve_set.add(outw)
                 try_a_n_list.append([outw, i_probw, round(i_probt * i_probw, 4)])
 
-        return round(ep, 4), involve_set
+        return round(ep, 4)
 
     def insertSeedIntoSeedSet(self, k_prod, i_nodet, s_set, a_n_set, a_e_set, w_list, pp_list):
         # -- insert the seed with maximum expected profit into seed set --
@@ -185,17 +181,14 @@ class DiffusionNormalIC:
         ### try_a_n_list: (list) the set to store the nodes may be activated for some products
         ### try_a_n_list[][0]: (str) the receiver when seed is ancestor
         ### try_a_n_list[][1]: (float4) the probability to activate the receiver from seed
-        ### cur_cus_set: (list)
-        ### cur_cus_set[k]: (set) the set to record the customers affected by seed i_nodet
         ### an_number: (int) the number of costumers activated bt this seed
         try_a_n_list = []
-        cur_cus_set = [{i_nodet} for _ in range(self.num_product)]
         an_number = 1
 
         # -- add the receivers of seed into try_a_n_list --
         # -- notice: prevent the seed from owing no receiver --
         if i_nodet not in self.graph_dict:
-            return s_set, a_n_set, a_e_set, an_number, cur_cus_set, cur_profit, w_list, pp_list
+            return s_set, a_n_set, a_e_set, an_number, cur_profit, w_list, pp_list
 
         outdict = self.graph_dict[i_nodet]
         for out in outdict:
@@ -211,7 +204,6 @@ class DiffusionNormalIC:
                 continue
             if random.random() <= float(outdict[out]):
                 try_a_n_list.append(out)
-                cur_cus_set[k_prod].add(out)
                 if i_nodet in a_e_set[k_prod]:
                     a_e_set[k_prod][i_nodet].add(out)
                 else:
@@ -256,13 +248,12 @@ class DiffusionNormalIC:
                         continue
                     if random.random() <= float(outdictw[outw]):
                         try_a_n_list.append(outw)
-                        cur_cus_set[k_prod].add(outw)
                         if i_nodet in a_e_set[k_prod]:
                             a_e_set[k_prod][i_nodet].add(outw)
                         else:
                             a_e_set[k_prod][i_nodet] = {outw}
 
-        return s_set, a_n_set, a_e_set, an_number, cur_cus_set, cur_profit, w_list, pp_list
+        return s_set, a_n_set, a_e_set, an_number, cur_profit, w_list, pp_list
 
 
 class Evaluation:
