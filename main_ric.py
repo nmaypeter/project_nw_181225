@@ -3,30 +3,12 @@ from SeedSelection_Random import *
 if __name__ == "__main__":
     for pps in [1, 2, 3]:
         for wpiwp in [bool(0), bool(1)]:
-            data_set_name, product_name = "", ""
-            for data_setting in [2]:
-                if data_setting == 1:
-                    data_set_name = "email_directed"
-                elif data_setting == 2:
-                    data_set_name = "email_undirected"
-                elif data_setting == 3:
-                    data_set_name = "WikiVote_directed"
+            for data_setting in [1]:
+                data_set_name = "email_directed" * (data_setting == 1) + "email_undirected" * (data_setting == 2) + "WikiVote_directed" * (data_setting == 3)
                 for prod_setting in [1, 2]:
                     for prod_setting2 in [1, 2, 3]:
-                        if prod_setting == 1:
-                            if prod_setting2 == 1:
-                                product_name = "r1p3n1"
-                            elif prod_setting2 == 2:
-                                product_name = "r1p3n1a"
-                            elif prod_setting2 == 3:
-                                product_name = "r1p3n1b"
-                        elif prod_setting == 2:
-                            if prod_setting2 == 1:
-                                product_name = "r1p3n2"
-                            elif prod_setting2 == 2:
-                                product_name = "r1p3n2a"
-                            elif prod_setting2 == 3:
-                                product_name = "r1p3n2b"
+                        product_name = "r1p3n" + str(prod_setting) + "a" * (prod_setting2 == 2) + "b" * (prod_setting2 == 3)
+
                         total_budget = 10
                         sample_number, sample_output_number = 10, 10
 
