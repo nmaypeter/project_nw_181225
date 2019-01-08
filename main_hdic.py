@@ -122,11 +122,11 @@ if __name__ == "__main__":
                                             fw = open("result/mhdic_pps" + str(pps) + "_wpiwp" * wpiwp + "/" +
                                                       data_set_name + "_" + product_name + "/" +
                                                       "b" + str(bud) + "_i" + str(sample_count + 1) + ".txt", 'w')
-                                            fw.write("mhdic , pp_strategy = " + str(pps) + ", total_budget = " + str(bud) + ", wpiwp = " + str(wpiwp) + "\n" +
+                                            fw.write("mhdic, pp_strategy = " + str(pps) + ", total_budget = " + str(bud) + ", wpiwp = " + str(wpiwp) + "\n" +
                                                      "data_set_name = " + data_set_name + ", product_name = " + product_name + "\n" +
                                                      "total_budget = " + str(bud) + ", sample_count = " + str(sample_count + 1) + "\n" +
                                                      "avg_profit = " + str(round(avg_profit / (sample_count + 1), 4)) +
-                                                     "avg_budget = " + str(round(avg_budget / (sample_count + 1), 4)) + "\n" +
+                                                     ", avg_budget = " + str(round(avg_budget / (sample_count + 1), 4)) + "\n" +
                                                      "total_time = " + str(how_long) + ", avg_time = " + str(round(how_long / (sample_count + 1), 4)) + "\n")
                                             fw.write("\nprofit_ratio =")
                                             for kk in range(num_product):
