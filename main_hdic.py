@@ -71,62 +71,63 @@ if __name__ == "__main__":
                                     mep_i_node, degree_dict = sshd_main.getHighDegreeNode(degree_dict)
                                     while seed_cost_dict[mep_i_node] > total_budget or degree_dict == {}:
                                         mep_i_node, degree_dict = sshd_main.getHighDegreeNode(degree_dict)
-                                        # -- result --
-                                        now_num_k_seed, now_num_k_an = [len(kk) for kk in seed_set], [len(kk) for kk in activated_node_set]
-                                        result.append([round(now_profit, 4), round(now_budget, 4), now_num_k_seed, now_num_k_an, seed_set])
-                                        avg_profit += now_profit
-                                        avg_budget += now_budget
-                                        for kk in range(num_product):
-                                            avg_num_k_seed[kk] += now_num_k_seed[kk]
-                                            avg_num_k_an[kk] += now_num_k_an[kk]
-                                            pro_k_list[kk], bud_k_list[kk] = round(pro_k_list[kk], 4), round(bud_k_list[kk], 4)
 
-                                        if seed_set not in mrss_set:
-                                            mrss_times.append(1)
-                                            mrss_pro.append(now_profit)
-                                            mrss_set.append(seed_set)
-                                        else:
-                                            ii = mrss_set.index(seed_set)
-                                            mrss_times[ii] += 1
-                                            mrss_pro[ii] += now_profit
-                                        ii = mrss_set.index(seed_set)
-                                        if (mrss_times[ii] > mrss[0]) or ((mrss_times[ii] == mrss[0]) and (mrss_pro[ii] / mrss_times[ii]) > (mrss[1] / mrss[0])):
-                                            mrss = [mrss_times[ii], mrss_pro[ii], seed_set]
+                                # -- result --
+                                now_num_k_seed, now_num_k_an = [len(kk) for kk in seed_set], [len(kk) for kk in activated_node_set]
+                                result.append([round(now_profit, 4), round(now_budget, 4), now_num_k_seed, now_num_k_an, seed_set])
+                                avg_profit += now_profit
+                                avg_budget += now_budget
+                                for kk in range(num_product):
+                                    avg_num_k_seed[kk] += now_num_k_seed[kk]
+                                    avg_num_k_an[kk] += now_num_k_an[kk]
+                                    pro_k_list[kk], bud_k_list[kk] = round(pro_k_list[kk], 4), round(bud_k_list[kk], 4)
 
-                                        how_long = round(time.time() - start_time, 2)
-                                        print("total_time: " + str(how_long) + "sec")
-                                        print(result[sample_count])
-                                        print("avg_profit = " + str(round(avg_profit / (sample_count + 1), 4)) + ", avg_budget = " + str(round(avg_budget / (sample_count + 1), 4)))
-                                        print("------------------------------------------")
+                                if seed_set not in mrss_set:
+                                    mrss_times.append(1)
+                                    mrss_pro.append(now_profit)
+                                    mrss_set.append(seed_set)
+                                else:
+                                    ii = mrss_set.index(seed_set)
+                                    mrss_times[ii] += 1
+                                    mrss_pro[ii] += now_profit
+                                ii = mrss_set.index(seed_set)
+                                if (mrss_times[ii] > mrss[0]) or ((mrss_times[ii] == mrss[0]) and (mrss_pro[ii] / mrss_times[ii]) > (mrss[1] / mrss[0])):
+                                    mrss = [mrss_times[ii], mrss_pro[ii], seed_set]
 
-                                        if (sample_count + 1) % sample_output_number == 0:
-                                            # print("output1")
-                                            fw = open("result/mhdic_pps" + str(pps) + "_wpiwp" * wpiwp + "/" +
-                                                      data_set_name + "_" + product_name + "/" +
-                                                      "b" + str(bud) + "_i" + str(sample_count + 1) + ".txt", 'w')
-                                            fw.write("mhdic, pp_strategy = " + str(pps) + ", total_budget = " + str(bud) + ", wpiwp = " + str(wpiwp) + "\n" +
-                                                     "data_set_name = " + data_set_name + ", product_name = " + product_name + "\n" +
-                                                     "total_budget = " + str(bud) + ", sample_count = " + str(sample_count + 1) + "\n" +
-                                                     "avg_profit = " + str(round(avg_profit / (sample_count + 1), 4)) +
-                                                     ", avg_budget = " + str(round(avg_budget / (sample_count + 1), 4)) + "\n" +
-                                                     "total_time = " + str(how_long) + ", avg_time = " + str(round(how_long / (sample_count + 1), 4)) + "\n")
-                                            fw.write("\nprofit_ratio =")
-                                            for kk in range(num_product):
-                                                fw.write(" " + str(round(pro_k_list[kk] / (sample_count + 1), 4)))
-                                            fw.write("\nbudget_ratio =")
-                                            for kk in range(num_product):
-                                                fw.write(" " + str(round(bud_k_list[kk] / (sample_count + 1), 4)))
-                                            fw.write("\nseed_number =")
-                                            for kk in range(num_product):
-                                                fw.write(" " + str(round(avg_num_k_seed[kk] / (sample_count + 1), 4)))
-                                            fw.write("\ncustomer_number =")
-                                            for kk in range(num_product):
-                                                fw.write(" " + str(round(avg_num_k_an[kk] / (sample_count + 1), 4)))
-                                            fw.write("\n\n")
-                                            mrss = [mrss[0], round(mrss[1] / mrss[0], 2), mrss[2]]
-                                            fw.write(str(mrss[0]) + ", " + str(mrss[1]) + ", " + str(mrss[2]) + "\n")
+                                how_long = round(time.time() - start_time, 2)
+                                print("total_time: " + str(how_long) + "sec")
+                                print(result[sample_count])
+                                print("avg_profit = " + str(round(avg_profit / (sample_count + 1), 4)) + ", avg_budget = " + str(round(avg_budget / (sample_count + 1), 4)))
+                                print("------------------------------------------")
 
-                                            for t, r in enumerate(result):
-                                                fw.write("\n" + str(t) + " " + str(round(r[0], 4)) + " " + str(round(r[1], 4)) + " " + str(r[2]) + " " + str(r[3]) + " " + str(r[4]))
-                                                fw.write("\n" + str(t) + " " + str(an_promote_list[t]))
-                                            fw.close()
+                                if (sample_count + 1) % sample_output_number == 0:
+                                    # print("output1")
+                                    fw = open("result/mhdic_pps" + str(pps) + "_wpiwp" * wpiwp + "/" +
+                                              data_set_name + "_" + product_name + "/" +
+                                              "b" + str(bud) + "_i" + str(sample_count + 1) + ".txt", 'w')
+                                    fw.write("mhdic, pp_strategy = " + str(pps) + ", total_budget = " + str(bud) + ", wpiwp = " + str(wpiwp) + "\n" +
+                                             "data_set_name = " + data_set_name + ", product_name = " + product_name + "\n" +
+                                             "total_budget = " + str(bud) + ", sample_count = " + str(sample_count + 1) + "\n" +
+                                             "avg_profit = " + str(round(avg_profit / (sample_count + 1), 4)) +
+                                             ", avg_budget = " + str(round(avg_budget / (sample_count + 1), 4)) + "\n" +
+                                             "total_time = " + str(how_long) + ", avg_time = " + str(round(how_long / (sample_count + 1), 4)) + "\n")
+                                    fw.write("\nprofit_ratio =")
+                                    for kk in range(num_product):
+                                        fw.write(" " + str(round(pro_k_list[kk] / (sample_count + 1), 4)))
+                                    fw.write("\nbudget_ratio =")
+                                    for kk in range(num_product):
+                                        fw.write(" " + str(round(bud_k_list[kk] / (sample_count + 1), 4)))
+                                    fw.write("\nseed_number =")
+                                    for kk in range(num_product):
+                                        fw.write(" " + str(round(avg_num_k_seed[kk] / (sample_count + 1), 4)))
+                                    fw.write("\ncustomer_number =")
+                                    for kk in range(num_product):
+                                        fw.write(" " + str(round(avg_num_k_an[kk] / (sample_count + 1), 4)))
+                                    fw.write("\n\n")
+                                    mrss = [mrss[0], round(mrss[1] / mrss[0], 2), mrss[2]]
+                                    fw.write(str(mrss[0]) + ", " + str(mrss[1]) + ", " + str(mrss[2]) + "\n")
+
+                                    for t, r in enumerate(result):
+                                        fw.write("\n" + str(t) + " " + str(round(r[0], 4)) + " " + str(round(r[1], 4)) + " " + str(r[2]) + " " + str(r[3]) + " " + str(r[4]))
+                                        fw.write("\n" + str(t) + " " + str(an_promote_list[t]))
+                                    fw.close()
