@@ -1,4 +1,4 @@
-for m in [1]:
+for m in [2, 3]:
     model_name = "mngic" * (m == 1) + "mhdic" * (m == 2) + "mric" * (m == 3) + "_pps"
     for pps in [1, 2, 3]:
         profit, cost, time_avg, time_total = [], [], [], []
@@ -9,7 +9,8 @@ for m in [1]:
                 for wpiwp in [bool(0), bool(1)]:
                     for prod_setting2 in [1, 2, 3]:
                         product_name = "r1p3n" + str(prod_setting) + "a" * (prod_setting2 == 2) + "b" * (prod_setting2 == 3)
-                        path = "result/r/" + model_name + str(pps) + "_" + "wpiwp_" * wpiwp + data_set_name + "_" + product_name
+                        path = "result/r/" + model_name + str(pps) + "_wpiwp" * wpiwp + "/" + \
+                               model_name + str(pps) + "_wpiwp" * wpiwp + "_" + data_set_name + "_" + product_name
 
                         with open(path + "/profit.txt") as f:
                             for line in f:
@@ -31,7 +32,8 @@ for m in [1]:
                 for prod_setting2 in [1, 2, 3]:
                     product_name = "r1p3n" + str(prod_setting) + "a" * (prod_setting2 == 2) + "b" * (prod_setting2 == 3)
                     for wpiwp in [bool(0), bool(1)]:
-                        path = "result/r/" + model_name + str(pps) + "_" + "wpiwp_" * wpiwp + data_set_name + "_" + product_name
+                        path = "result/r/" + model_name + str(pps) + "_wpiwp" * wpiwp + "/" + \
+                               model_name + str(pps) + "_wpiwp" * wpiwp + "_" + data_set_name + "_" + product_name
 
                         with open(path + "/ratio_profit.txt") as f:
                             for line in f:
