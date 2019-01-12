@@ -28,9 +28,6 @@ if __name__ == "__main__":
                             sshd_sample = SeedSelectionHD(graph_dict, seed_cost_dict, product_list, bud, pps, wpiwp)
                             dnic_sample = DiffusionNormalIC(graph_dict, seed_cost_dict, product_list, pps, wpiwp)
 
-                            degree_dict_o = sshd_sample.constructDegreeDict(data_set_name)
-                            mep_i_node, degree_dict_o = sshd_sample.getHighDegreeNode(degree_dict_o)
-
                             # -- initialization for each sample_number --
                             now_profit, now_budget = 0.0, 0.0
                             seed_set, activated_node_set = [set() for _ in range(num_product)], [set() for _ in range(num_product)]
@@ -38,13 +35,12 @@ if __name__ == "__main__":
                             personal_prob_list = [[1.0 for _ in range(num_node)] for _ in range(num_product)]
 
                             current_wallet_list = copy.deepcopy(wallet_list)
-                            degree_dict = copy.deepcopy(degree_dict_o)
+
+                            degree_dict = sshd_sample.constructDegreeDict(data_set_name)
+                            mep_i_node, degree_dict = sshd_sample.getHighDegreeNode(degree_dict)
 
                             an_promote_list = []
                             class_count, class_accumulate_num_node_list, class_accumulate_wallet = [], [[] for _ in range(10)], [[] for _ in range(10)]
-
-                            while seed_cost_dict[mep_i_node] > bud or degree_dict == {}:
-                                mep_i_node, degree_dict = sshd_sample.getHighDegreeNode(degree_dict)
 
                             # -- main --
                             while now_budget < bud and mep_i_node != '-1':
@@ -55,16 +51,14 @@ if __name__ == "__main__":
                                     dnic_sample.insertSeedIntoSeedSet(mep_k_prod, mep_i_node, seed_set, activated_node_set, activated_edge_set, current_wallet_list, personal_prob_list)
 
                                 for num in range(10):
-                                    class_accumulate_num_node_list[num].append(len(
-                                        iniG.getNodeClassList(iniP.getProductList()[1], current_wallet_list)[0][num]))
-                                    class_accumulate_wallet[num].append(
-                                        iniG.getNodeClassList(iniP.getProductList()[1], current_wallet_list)[1][num])
+                                    class_accumulate_num_node_list[num].append(len(iniG.getNodeClassList(iniP.getProductList()[1], current_wallet_list)[0][num]))
+                                    class_accumulate_wallet[num].append(iniG.getNodeClassList(iniP.getProductList()[1], current_wallet_list)[1][num])
                                 now_profit += round(current_profit, 4)
                                 now_budget += seed_cost_dict[mep_i_node]
                                 an_promote_list.append([mep_k_prod, mep_i_node, an_number, round(current_profit, 4), seed_cost_dict[mep_i_node], iniG.getNodeOutDegree(mep_i_node)])
 
                                 mep_i_node, degree_dict = sshd_sample.getHighDegreeNode(degree_dict)
-                                while seed_cost_dict[mep_i_node] > bud or degree_dict == {}:
+                                while seed_cost_dict[mep_i_node] + now_budget > bud or degree_dict == {}:
                                     mep_i_node, degree_dict = sshd_sample.getHighDegreeNode(degree_dict)
 
                             # -- result --
