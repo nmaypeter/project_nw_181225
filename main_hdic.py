@@ -3,7 +3,7 @@ from SeedSelection_HighDegree import *
 if __name__ == "__main__":
     for pps in [1, 2, 3]:
         for wpiwp in [bool(0), bool(1)]:
-            for data_setting in [1]:
+            for data_setting in [2]:
                 data_set_name = "email_directed" * (data_setting == 1) + "email_undirected" * (data_setting == 2) + "WikiVote_directed" * (data_setting == 3)
                 for prod_setting in [1, 2]:
                     for prod_setting2 in [1, 2, 3]:
@@ -31,9 +31,6 @@ if __name__ == "__main__":
                             sshd_main = SeedSelectionHD(graph_dict, seed_cost_dict, product_list, bud, pps, wpiwp)
                             dnic_main = DiffusionNormalIC(graph_dict, seed_cost_dict, product_list, pps, wpiwp)
 
-                            degree_dict_o = sshd_main.constructDegreeDict(data_set_name)
-                            mep_i_node, degree_dict_o = sshd_main.getHighDegreeNode(degree_dict_o)
-
                             result = []
                             avg_profit, avg_budget = 0.0, 0.0
                             pro_k_list, bud_k_list = [0.0 for _ in range(num_product)], [0.0 for _ in range(num_product)]
@@ -51,10 +48,9 @@ if __name__ == "__main__":
                                 personal_prob_list = [[1.0 for _ in range(num_node)] for _ in range(num_product)]
 
                                 current_wallet_list = copy.deepcopy(wallet_list)
-                                degree_dict = copy.deepcopy(degree_dict_o)
 
-                                while seed_cost_dict[mep_i_node] > total_budget or degree_dict == {}:
-                                    mep_i_node, degree_dict = sshd_main.getHighDegreeNode(degree_dict)
+                                degree_dict = sshd_main.constructDegreeDict(data_set_name)
+                                mep_i_node, degree_dict_o = sshd_main.getHighDegreeNode(degree_dict)
 
                                 # -- main --
                                 while now_budget < bud and mep_i_node != '-1':
@@ -69,7 +65,7 @@ if __name__ == "__main__":
                                     an_promote_list[sample_count].append([mep_k_prod, mep_i_node, an_number, round(current_profit, 4), seed_cost_dict[mep_i_node], iniG.getNodeOutDegree(mep_i_node)])
 
                                     mep_i_node, degree_dict = sshd_main.getHighDegreeNode(degree_dict)
-                                    while seed_cost_dict[mep_i_node] > total_budget or degree_dict == {}:
+                                    while seed_cost_dict[mep_i_node] + now_budget > total_budget or degree_dict == {}:
                                         mep_i_node, degree_dict = sshd_main.getHighDegreeNode(degree_dict)
 
                                 # -- result --
