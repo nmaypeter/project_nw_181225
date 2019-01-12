@@ -44,14 +44,6 @@ class SeedSelectionHD:
     def getHighDegreeNode(d_dict):
         # -- get the node with highest degree --
         max_degree = -1
-        for deg in list(d_dict.keys()):
-            if int(deg) > max_degree:
-                max_degree = int(deg)
-
-        if len(d_dict[str(max_degree)]) == 0:
-            del d_dict[str(max_degree)]
-            max_degree = -1
-
         while max_degree == -1:
             for deg in list(d_dict.keys()):
                 if int(deg) > max_degree:
@@ -108,9 +100,6 @@ if __name__ == "__main__":
     ### pro_k_list[kk], bud_k_list[kk]: (float) the list to record profit and budget for kk-product
     pro_k_list, bud_k_list = [0.0 for _ in range(num_product)], [0.0 for _ in range(num_product)]
 
-    degree_dict_o = sshd_sample.constructDegreeDict(data_set_name)
-    mep_i_node, degree_dict_o = sshd_sample.getHighDegreeNode(degree_dict_o)
-
     # -- initialization for each sample_number --
     ### now_profit, now_budget: (float) the profit and budget in this execution_time
     now_profit, now_budget = 0.0, 0.0
@@ -129,13 +118,12 @@ if __name__ == "__main__":
     personal_prob_list = [[1.0 for _ in range(num_node)] for _ in range(num_product)]
 
     current_wallet_list = copy.deepcopy(wallet_list)
-    degree_dict = copy.deepcopy(degree_dict_o)
+
+    degree_dict = sshd_sample.constructDegreeDict(data_set_name)
+    mep_i_node, degree_dict_o = sshd_sample.getHighDegreeNode(degree_dict)
 
     ### an_promote_list: (list) to record the seed activate customer event for a product
     an_promote_list = []
-
-    while seed_cost_dict[mep_i_node] > total_budget or degree_dict == {}:
-        mep_i_node, degree_dict = sshd_sample.getHighDegreeNode(degree_dict)
 
     # -- main --
     while now_budget < total_budget and mep_i_node != '-1':
@@ -150,7 +138,7 @@ if __name__ == "__main__":
         an_promote_list.append([mep_k_prod, mep_i_node, an_number, round(current_profit, 4), seed_cost_dict[mep_i_node], iniG.getNodeOutDegree(mep_i_node)])
 
         mep_i_node, degree_dict = sshd_sample.getHighDegreeNode(degree_dict)
-        while seed_cost_dict[mep_i_node] > total_budget or degree_dict == {}:
+        while seed_cost_dict[mep_i_node] + now_budget > total_budget or degree_dict == {}:
             mep_i_node, degree_dict = sshd_sample.getHighDegreeNode(degree_dict)
 
     # -- result --
