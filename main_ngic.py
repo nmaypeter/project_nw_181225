@@ -109,10 +109,14 @@ if __name__ == "__main__":
                                 print("------------------------------------------")
 
                                 if (sample_count + 1) % sample_output_number == 0:
-                                    # print("output1")
-                                    fw = open("result/mngic_pps" + str(pps) + "_wpiwp" * wpiwp + "/" +
-                                              data_set_name + "_" + product_name + "/" +
-                                              "b" + str(bud) + "_i" + str(sample_count + 1) + ".txt", 'w')
+                                    path1 = "result/mngic_pps" + str(pps) + "_wpiwp" * wpiwp
+                                    if not os.path.isdir(path1):
+                                        os.mkdir(path1)
+                                    path = "result/mngic_pps" + str(pps) + "_wpiwp" * wpiwp + "/" +\
+                                           data_set_name + "_" + product_name
+                                    if not os.path.isdir(path):
+                                        os.mkdir(path)
+                                    fw = open(path + "/" + "b" + str(bud) + "_i" + str(sample_count + 1) + ".txt", 'w')
                                     fw.write("mngic, pp_strategy = " + str(pps) + ", total_budget = " + str(bud) + ", wpiwp = " + str(wpiwp) + "\n" +
                                              "data_set_name = " + data_set_name + ", product_name = " + product_name + "\n" +
                                              "total_budget = " + str(bud) + ", sample_count = " + str(sample_count + 1) + "\n" +
