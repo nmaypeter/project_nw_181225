@@ -65,7 +65,9 @@ if __name__ == "__main__":
                                     an_promote_list[sample_count].append([mep_k_prod, mep_i_node, an_number, round(current_profit, 4), seed_cost_dict[mep_i_node], iniG.getNodeOutDegree(mep_i_node)])
 
                                     mep_i_node, degree_dict = sshd_main.getHighDegreeNode(degree_dict)
-                                    while seed_cost_dict[mep_i_node] + now_budget > total_budget or degree_dict == {}:
+                                    if mep_i_node == '-1':
+                                        continue
+                                    while seed_cost_dict[mep_i_node] + now_budget > total_budget:
                                         mep_i_node, degree_dict = sshd_main.getHighDegreeNode(degree_dict)
 
                                 # -- result --
