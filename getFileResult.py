@@ -1,7 +1,7 @@
 import os
 
 
-for m in [1]:
+for m in [2, 3]:
     model_name = "mngic" * (m == 1) + "mhdic" * (m == 2) + "mric" * (m == 3) + "_pps"
     for pps in [1, 2, 3]:
         for wpiwp in [bool(0), bool(1)]:
@@ -71,7 +71,14 @@ for m in [1]:
                                     number_an[num].append("")
                                 continue
 
-                            path = "result/r/" + model_name + str(pps) + "_" + "wpiwp_" * wpiwp + data_set_name + "_" + product_name
+                            path1 = "result/r/" + model_name + str(pps) + "_wpiwp" * wpiwp
+                            path2 = model_name + str(pps) + "_wpiwp" * wpiwp + "_" + data_set_name + "_" + product_name
+                            if not os.path.isdir(path1):
+                                os.mkdir(path1)
+                            if not os.path.isdir(path2):
+                                os.mkdir(path2)
+                            path = "result/r/" + model_name + str(pps) + "_wpiwp" * wpiwp + "/" + \
+                                   model_name + str(pps) + "_wpiwp" * wpiwp + "_" + data_set_name + "_" + product_name
                             if not os.path.isdir(path):
                                 os.mkdir(path)
 
