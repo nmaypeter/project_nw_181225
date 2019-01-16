@@ -120,6 +120,8 @@ if __name__ == "__main__":
 
     current_wallet_list = copy.deepcopy(wallet_list)
     nban_set = copy.deepcopy(notban_set)
+    for ii in range(num_node):
+        personal_prob_list = dnic.updatePersonalProbList(-1, str(ii), current_wallet_list, personal_prob_list)
 
     ### an_promote_list: (list) to record the seed activate customer event for a product
     an_promote_list = []
