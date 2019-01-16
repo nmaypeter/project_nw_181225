@@ -49,6 +49,8 @@ if __name__ == "__main__":
                                 personal_prob_list = [[1.0 for _ in range(num_node)] for _ in range(num_product)]
 
                                 current_wallet_list = copy.deepcopy(wallet_list)
+                                for ii in range(num_node):
+                                    personal_prob_list = dnic_main.updatePersonalProbList(-1, str(ii), current_wallet_list, personal_prob_list)
 
                                 degree_dict = sshd_main.constructDegreeDict(data_set_name)
                                 mep_i_node, degree_dict_o = sshd_main.getHighDegreeNode(degree_dict)
