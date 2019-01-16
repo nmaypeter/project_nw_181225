@@ -105,9 +105,6 @@ if __name__ == "__main__":
     ### exp_profit_list: (list) the list of expected profit for all combinations of nodes and products
     ### exp_profit_list[kk]: (list) the list of expected profit for kk-product
     ### exp_profit_list[kk][ii]: (float4) the expected profit for ii-node for kk-product
-    print(round(time.time() - temp, 2))
-    print("getAllExpectProfitList")
-    temp = time.time()
     notban_seed_set = [set(graph_dict.keys()) for _ in range(num_product)]
     exp_profit_list, notban_seed_set = ssng.updateExpectProfitList([set() for _ in range(num_product)], notban_seed_set, [[0 for _ in range(num_node)] for _ in range(num_product)],
                                                                    0.0, [set() for _ in range(num_product)], [{} for _ in range(num_product)], wallet_list, personal_prob_list)
@@ -142,20 +139,16 @@ if __name__ == "__main__":
     per_prob_list = copy.deepcopy(personal_prob_list)
     exp_profit_list = copy.deepcopy(exp_profit_list)
     nban_seed_set = copy.deepcopy(notban_seed_set)
+    for ii in range(num_node):
+        personal_prob_list = dnic.updatePersonalProbList(-1, str(ii), current_wallet_list, personal_prob_list)
 
     ### an_promote_list: (list) to record the seed activate customer event for a product
     an_promote_list = []
-    print(round(time.time() - temp, 2))
-    print("getMostValuableSeed")
-    temp = time.time()
 
     mep_k_prod, mep_i_node = ssng.getMostValuableSeed(exp_profit_list, nban_seed_set)
 
     # -- main --
     while now_budget < total_budget and mep_i_node != '-1':
-        print(round(time.time() - temp, 2))
-        print("insertSeedIntoSeedSet")
-        temp = time.time()
         for kk in range(num_product):
             if mep_i_node in nban_seed_set[kk]:
                 nban_seed_set[kk].remove(mep_i_node)
@@ -168,14 +161,7 @@ if __name__ == "__main__":
         now_budget += seed_cost_dict[mep_i_node]
         an_promote_list.append([mep_k_prod, mep_i_node, an_number, round(current_profit, 4), seed_cost_dict[mep_i_node], iniG.getNodeOutDegree(mep_i_node)])
 
-        print(round(time.time() - temp, 2))
-        print("updateExpectProfitList")
-        temp = time.time()
         exp_profit_list, nban_seed_set = ssng.updateExpectProfitList(seed_set, nban_seed_set, exp_profit_list, now_budget, activated_node_set, activated_edge_set, current_wallet_list, per_prob_list)
-
-        print(round(time.time() - temp, 2))
-        print("getMostValuableSeed")
-        temp = time.time()
         mep_k_prod, mep_i_node = ssng.getMostValuableSeed(exp_profit_list, nban_seed_set)
 
     # -- result --
