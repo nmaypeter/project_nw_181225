@@ -48,6 +48,8 @@ if __name__ == "__main__":
                             current_wallet_list = copy.deepcopy(wallet_list)
                             exp_profit_list = copy.deepcopy(exp_profit_list)
                             nban_seed_set = copy.deepcopy(notban_seed_set)
+                            for ii in range(num_node):
+                                personal_prob_list = dnic_sample.updatePersonalProbList(-1, str(ii), current_wallet_list, personal_prob_list)
 
                             an_promote_list = []
                             class_count, class_accumulate_num_node_list, class_accumulate_wallet = [], [[] for _ in range(10)], [[] for _ in range(10)]
@@ -58,9 +60,10 @@ if __name__ == "__main__":
                             # -- main --
                             while now_budget < bud and mep_i_node != '-1':
                                 cc4_local = 0
-                                for ad in graph_dict[mep_i_node]:
-                                    if current_wallet_list[int(ad)] >= product_list[mep_k_prod][2]:
-                                        cc4_local += 1
+                                if mep_i_node in graph_dict:
+                                    for ad in graph_dict[mep_i_node]:
+                                        if current_wallet_list[int(ad)] >= product_list[mep_k_prod][2]:
+                                            cc4_local += 1
                                 class_count.append([mep_k_prod, mep_i_node, cc4_local, current_wallet_list[int(mep_i_node)]])
                                 affordable_number = [0 for _ in range(num_product)]
                                 for ii in range(num_node):
