@@ -36,6 +36,8 @@ if __name__ == "__main__":
                             personal_prob_list = [[1.0 for _ in range(num_node)] for _ in range(num_product)]
 
                             current_wallet_list = copy.deepcopy(wallet_list)
+                            for ii in range(num_node):
+                                personal_prob_list = dnic_sample.updatePersonalProbList(-1, str(ii), current_wallet_list, personal_prob_list)
 
                             degree_dict = sshd_sample.constructDegreeDict(data_set_name)
                             mep_i_node, degree_dict = sshd_sample.getHighDegreeNode(degree_dict)
@@ -48,9 +50,10 @@ if __name__ == "__main__":
                             while now_budget < bud and mep_i_node != '-1':
                                 mep_k_prod = choice([kk for kk in range(num_product)])
                                 cc4_local = 0
-                                for ad in graph_dict[mep_i_node]:
-                                    if current_wallet_list[int(ad)] >= product_list[mep_k_prod][2]:
-                                        cc4_local += 1
+                                if mep_i_node in graph_dict:
+                                    for ad in graph_dict[mep_i_node]:
+                                        if current_wallet_list[int(ad)] >= product_list[mep_k_prod][2]:
+                                            cc4_local += 1
                                 class_count.append([mep_k_prod, mep_i_node, cc4_local, current_wallet_list[int(mep_i_node)]])
                                 affordable_number = [0 for _ in range(num_product)]
                                 for ii in range(num_node):
