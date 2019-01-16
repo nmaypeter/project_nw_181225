@@ -3,8 +3,9 @@ from SeedSelection_HighDegree import *
 if __name__ == "__main__":
     for pps in [1, 2, 3]:
         for wpiwp in [bool(0), bool(1)]:
-            for data_setting in [2]:
-                data_set_name = "email_directed" * (data_setting == 1) + "email_undirected" * (data_setting == 2) + "WikiVote_directed" * (data_setting == 3)
+            for data_setting in [2, 4]:
+                data_set_name = "email_directed" * (data_setting == 1) + "email_undirected" * (data_setting == 2) + \
+                                "WikiVote_directed" * (data_setting == 3) + "NetPHY_undirected" * (data_setting == 4)
                 for prod_setting in [1, 2]:
                     for prod_setting2 in [1, 2, 3]:
                         product_name = "r1p3n" + str(prod_setting) + "a" * (prod_setting2 == 2) + "b" * (prod_setting2 == 3)
@@ -41,11 +42,22 @@ if __name__ == "__main__":
 
                             an_promote_list = []
                             class_count, class_accumulate_num_node_list, class_accumulate_wallet = [], [[] for _ in range(10)], [[] for _ in range(10)]
+                            remaining_affordable_number = []
 
                             # -- main --
                             while now_budget < bud and mep_i_node != '-1':
                                 mep_k_prod = choice([kk for kk in range(num_product)])
-                                class_count.append([mep_k_prod, mep_i_node, current_wallet_list[int(mep_i_node)]])
+                                cc4_local = 0
+                                for ad in graph_dict[mep_i_node]:
+                                    if current_wallet_list[int(ad)] >= product_list[mep_k_prod][2]:
+                                        cc4_local += 1
+                                class_count.append([mep_k_prod, mep_i_node, cc4_local, current_wallet_list[int(mep_i_node)]])
+                                affordable_number = [0 for _ in range(num_product)]
+                                for ii in range(num_node):
+                                    for kk in range(num_product):
+                                        if current_wallet_list[ii] >= product_list[kk][2]:
+                                            affordable_number[kk] += 1
+                                remaining_affordable_number.append(affordable_number)
 
                                 seed_set, activated_node_set, activated_edge_set, an_number, current_profit, current_wallet_list, personal_prob_list = \
                                     dnic_sample.insertSeedIntoSeedSet(mep_k_prod, mep_i_node, seed_set, activated_node_set, activated_edge_set, current_wallet_list, personal_prob_list)
@@ -65,42 +77,77 @@ if __name__ == "__main__":
 
                             # -- result --
                             how_long = round(time.time() - start_time, 2)
-                            fw = open("result/samples/mhdic_pps" + str(pps) + "_wpiwp" * wpiwp + "_" + data_set_name + "_" + product_name + "_b" + str(bud) + ".txt", 'w')
+
+                            path1 = "result/samples/mhdic_pps" + str(pps) + "_wpiwp" * wpiwp
+                            if not os.path.isdir(path1):
+                                os.mkdir(path1)
+                            path = "result/samples/mhdic_pps" + str(pps) + "_wpiwp" * wpiwp + "/" + \
+                                   data_set_name
+                            if not os.path.isdir(path):
+                                os.mkdir(path)
+
+                            fw = open(path + "/" + product_name + "_b" + str(bud) + ".txt", 'w')
                             # -- no. of product, no. of seed, degree, wallet of seed --
-                            cc1, cc2, cc3, cc4 = "", "", "", ""
+                            cc1, cc2, cc3, cc4, cc5 = "", "", "", "", ""
                             for cc in class_count:
                                 cc1 = cc1 + str(cc[0] + 1) + "\t"
                                 cc2 = cc2 + str(cc[1]) + "\t"
                                 cc3 = cc3 + str(iniG.getNodeOutDegree(cc[1])) + "\t"
-                                cc4 = cc4 + str(round(cc[2], 2)) + "\t"
+                                cc4 = cc4 + str(cc[2]) + "\t"
+                                cc5 = cc5 + str(round(cc[3], 2)) + "\t"
                             fw.write(str(cc1) + "\n")
                             fw.write(str(cc2) + "\n")
                             fw.write(str(cc3) + "\n")
                             fw.write(str(cc4) + "\n")
+                            fw.write(str(cc5) + "\n")
                             fw.write("\n" * 3)
 
                             # -- accumulative nodes --
+                            cannl_list = [0 for _ in range(len(class_accumulate_num_node_list[0]))]
                             for num in range(10):
                                 ca_list = ""
                                 for t, ca in enumerate(class_accumulate_num_node_list[num]):
                                     if num == 0:
                                         ca -= (t + 1)
                                     ca_list = ca_list + str(ca) + "\t"
+                                    cannl_list[t] += ca
                                 fw.write(str(ca_list) + "\n")
-                            fw.write("\n" * 5)
+                            cannl_str = ""
+                            for cannl in cannl_list:
+                                cannl_str += str(cannl) + "\t"
+                            fw.write(cannl_str + "\n")
+                            fw.write("\n" * 4)
 
                             # -- accumulative wallet --
+                            aw_list = [0 for _ in range(len(class_accumulate_wallet[0]))]
                             for num in range(10):
                                 ca_list = ""
-                                for ca in class_accumulate_wallet[num]:
+                                for t, ca in enumerate(class_accumulate_wallet[num]):
                                     ca_list = ca_list + str(ca) + "\t"
+                                    aw_list[t] += ca
                                 fw.write(str(ca_list) + "\n")
-                            fw.write("\n" * 5)
+                            aw_str = ""
+                            for aw in aw_list:
+                                aw_str += str(round(aw, 2)) + "\t"
+                            fw.write(aw_str + "\n")
+                            fw.write("\n" * 4)
 
+                            ap1_list, ap2_list = [0], [0.0]
                             ap1, ap2 = ["" for _ in range(num_product)], ["" for _ in range(num_product)]
-                            for ap in an_promote_list:
+                            apn1, apn2 = [[0 for _ in range(num_product)]], [[0.0 for _ in range(num_product)]]
+
+                            for t, ap in enumerate(an_promote_list):
+                                if t != 0:
+                                    ap1_list.append(ap1_list[t-1])
+                                    ap2_list.append(ap2_list[t-1])
+                                    apn1.append(copy.deepcopy(apn1[t-1]))
+                                    apn2.append(copy.deepcopy(apn2[t-1]))
+                                ap1_list[t] += ap[2]
+                                ap2_list[t] += round(ap[3], 2)
                                 for kk in range(num_product):
                                     if ap[0] == kk:
+                                        apn1[t][kk] += ap[2]
+                                        apn2[t][kk] += round(ap[3])
                                         ap1[kk] = ap1[kk] + str(ap[2]) + "\t"
                                         ap2[kk] = ap2[kk] + str(round(ap[3], 2)) + "\t"
                                     else:
@@ -109,10 +156,41 @@ if __name__ == "__main__":
                             # -- nodes for products --
                             for kk in range(num_product):
                                 fw.write(str(ap1[kk]) + "\n")
-                            fw.write("\n" * 12)
+                            ap1_str = ""
+                            for ap1_local in ap1_list:
+                                ap1_str += str(ap1_local) + "\t"
+                            fw.write(ap1_str + "\n")
+                            fw.write("\n")
+                            apn1_str = ["" for _ in range(num_product)]
+                            for apn1_local in apn1:
+                                for kk, apn1_l in enumerate(apn1_local):
+                                    apn1_str[kk] += str(apn1_l) + "\t"
+                            for kk in range(num_product):
+                                fw.write(str(apn1_str[kk]) + "\n")
+                            fw.write("\n" * 7)
                             # -- profit for products --
                             for kk in range(num_product):
                                 fw.write(str(ap2[kk]) + "\n")
+                            ap2_str = ""
+                            for ap2_local in ap2_list:
+                                ap2_str += str(round(ap2_local, 2)) + "\t"
+                            fw.write(ap2_str + "\n")
+                            fw.write("\n")
+                            apn2_str = ["" for _ in range(num_product)]
+                            for apn2_local in apn2:
+                                for kk, apn2_l in enumerate(apn2_local):
+                                    apn2_str[kk] += str(apn2_l) + "\t"
+                            for kk in range(num_product):
+                                fw.write(str(apn2_str[kk]) + "\n")
+                            fw.write("\n" * 7)
+
+                            # -- affordable nodes --
+                            aff_num = ["" for _ in range(num_product)]
+                            for aff in remaining_affordable_number:
+                                for kk in range(num_product):
+                                    aff_num[kk] += str(aff[kk]) + "\t"
+                            for kk in range(num_product):
+                                fw.write(aff_num[kk] + "\n")
 
                             print("total time: " + str(how_long) + "sec")
                             fw.close()
