@@ -61,6 +61,8 @@ if __name__ == "__main__":
                                 current_wallet_list = copy.deepcopy(wallet_list)
                                 exp_profit_list = copy.deepcopy(exp_profit_list)
                                 nban_seed_set = copy.deepcopy(notban_seed_set)
+                                for ii in range(num_node):
+                                    personal_prob_list = dnic_main.updatePersonalProbList(-1, str(ii), current_wallet_list, personal_prob_list)
 
                                 mep_k_prod, mep_i_node = ssng_main.getMostValuableSeed(exp_profit_list, nban_seed_set)
 
