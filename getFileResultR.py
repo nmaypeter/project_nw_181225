@@ -3,8 +3,9 @@ for m in [2, 3]:
     for pps in [1, 2, 3]:
         profit, cost, time_avg, time_total = [], [], [], []
         ratio_profit, ratio_cost, number_an, number_seed = [], [], [], []
-        for data_setting in [2]:
-            data_set_name = "email_directed" * (data_setting == 1) + "email_undirected" * (data_setting == 2) + "WikiVote_directed" * (data_setting == 3)
+        for data_setting in [2, 4]:
+            data_set_name = "email_directed" * (data_setting == 1) + "email_undirected" * (data_setting == 2) + \
+                            "WikiVote_directed" * (data_setting == 3) + "NetPHY_undirected" * (data_setting == 4)
             for prod_setting in [1, 2]:
                 for wpiwp in [bool(0), bool(1)]:
                     for prod_setting2 in [1, 2, 3]:
