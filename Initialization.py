@@ -34,7 +34,7 @@ class IniGraph:
                 out_degree_list.append(node1)
 
         for i in range(0, num_node + 1):
-            fw.write(str(i) + " " + str(out_degree_list.count(str(i))) + "\n")
+            fw.write(str(i) + "\t" + str(out_degree_list.count(str(i))) + "\n")
         fw.close()
         f.close()
 
@@ -66,6 +66,8 @@ class IniGraph:
                 num_node = max(num_node, int(node))
                 max_deg = max(max_deg, int(degree))
                 seed_cost_list.append([node, degree])
+            # print(max_deg)
+
             for i in range(num_node + 1):
                 s_cost_dict[str(i)] = round(int(seed_cost_list[i][1]) / max_deg, 2)
         f.close()
@@ -103,13 +105,16 @@ class IniGraph:
     def getWalletList(self, prod_name):
         # -- get wallet_list from file --
         w_list = []
+        total_wallet = 0.0
         with open("data/" + self.data_name + "/wallet_r" + list(prod_name)[list(prod_name).index('r') + 1] +
                   "p" + list(prod_name)[list(prod_name).index('p') + 1] +
                   "n" + list(prod_name)[list(prod_name).index('n') + 1] + ".txt") as f:
             for line in f:
                 (node, wallet) = line.split()
                 w_list.append(float(wallet))
+                total_wallet += float(wallet)
         f.close()
+        # print(round(total_wallet, 2))
 
         return w_list
 
@@ -199,8 +204,8 @@ class IniProduct:
 if __name__ == "__main__":
     ### data_set_name: (str) the dataset
     ### product_name: (str) the product dataset
-    data_set_name = "email_undirected"
-    product_name = "r1p3n1"
+    data_set_name = "email_directed"
+    product_name = "r1p3n2"
 
     iniG = IniGraph(data_set_name)
     iniP = IniProduct(product_name)
@@ -208,22 +213,28 @@ if __name__ == "__main__":
     # iniG.setEdgeWeight()
     # iniG.countNodeOutDegree()
     # iniP.setProductListWithSRRandMFP()
-    # product_list, sum_price = iniP.getProductList()
-    ### -- item_r1p3n1, item_r1p3n2: sum_price = 1.44 --
-    ### -- item_r1p3n1_a, item_r1p3n2_a: sum_price = 1.32 --
-    ### -- item_r1p3n1_b, item_r1p3n2_b: sum_price = 1.68 --
+    product_list, sum_price = iniP.getProductList()
+    ### -- r1p3n1, r1p3n2: sum_price = 1.44 --
+    ### -- r1p3n1a, r1p3n2a: sum_price = 1.32 --
+    ### -- r1p3n1b, r1p3n2b: sum_price = 1.68 --
     # iniG.setNodeWallet(product_name, sum_price)
 
-    seed_cost_dict = iniG.constructSeedCostDict()[1]
+    # seed_cost_dict = iniG.constructSeedCostDict()[1]
     ### -- email_directed: max_degree = 37 --
     ### -- email_undirected: max_degree = 71 --
     ### -- WikiVote_directed: max_degree = 1065 --
+    ### -- NetPHY_undirected: max_degree = 178 --
     # graph_dict = iniG.constructGraphDict()
     # product_list = iniP.getProductList()[0]
-    # wallet_list = iniG.getWalletList(product_name)
-    ### -- email_directed: total_wallet = 811.57 --
-    ### -- email_undirected: total_wallet = 811.57 --
-    ### -- WikiVote_directed: total_wallet = 5995.88 --
+    wallet_list = iniG.getWalletList(product_name)
+    ### -- email_directed: r1p3n1 = 811.57 --
+    ### -- email_directed: r1p3n2 = 817.32 --
+    ### -- email_undirected: r1p3n1 = 811.57 --
+    ### -- email_undirected: r1p3n2 = 817.32 --
+    ### -- WikiVote_directed: r1p3n1 = 5995.88 --
+    ### -- WikiVote_directed: r1p3n2 = 5998.45 --
+    ### -- NetPHY_undirected - r1p3n1:: total_wallet = 26920.52 --
+    ### -- NetPHY_undirected - r1p3n2:: total_wallet = 26734.2 --
 
     # class_accumulate_node_list, class_accumulate_wallet = iniG.getNodeClassList(sum_price, wallet_list)
     # # -- number of nodes of each class --
@@ -243,4 +254,19 @@ if __name__ == "__main__":
     #     print(sssi)
     #     print(ssss)
     #     print("\n")
-    
+
+    # # -- display the number of affordable for product --
+    # affordable_number = [0 for _ in range(len(product_list))]
+    # for ii in range(len(wallet_list)):
+    #     for kk in range(len(product_list)):
+    #         if wallet_list[ii] >= product_list[kk][2]:
+    #             affordable_number[kk] += 1
+    # print(affordable_number)
+    ### -- email_directed - r1p3n1: affordable_number = [962, 745, 571] --
+    ### -- email_directed - r1p3n2: affordable_number = [934, 769, 570] --
+    ### -- email_undirected - r1p3n1: affordable_number = [962, 745, 571] --
+    ### -- email_undirected - r1p3n2: affordable_number = [934, 769, 570] --
+    ### -- WikiVote_directed - r1p3n1: affordable_number = [6936, 5588, 4228] --
+    ### -- WikiVote_directed - r1p3n2: affordable_number = [6973, 5585, 4188] --
+    ### -- NetPHY_undirected - r1p3n1: affordable_number = [31103, 24975, 18908] --
+    ### -- NetPHY_undirected - r1p3n2: affordable_number = [31054, 24921, 18709] --
