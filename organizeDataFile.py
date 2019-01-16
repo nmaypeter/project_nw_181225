@@ -1,5 +1,5 @@
 edge_dict = {}
-with open("data/email.txt") as f:
+with open("data/NetPHY.txt") as f:
     for line in f:
         (node1, node2) = line.split()
         if node1 in edge_dict:
@@ -12,7 +12,7 @@ with open("data/email.txt") as f:
             edge_dict[node2] = {int(node1)}
 f.close()
 
-fw = open("data/email_directed/data.txt", 'w')
+fw = open("data/NetPHY_undirected/data.txt", 'w')
 node_order_list = []
 for n1 in list(edge_dict.keys()):
     node_order_list.append(int(n1))
