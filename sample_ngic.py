@@ -3,7 +3,7 @@ from SeedSelection_NaiveGreedy import *
 if __name__ == "__main__":
     for pps in [1, 2, 3]:
         for wpiwp in [bool(0), bool(1)]:
-            for data_setting in [2, 4]:
+            for data_setting in [2]:
                 data_set_name = "email_directed" * (data_setting == 1) + "email_undirected" * (data_setting == 2) + \
                                 "WikiVote_directed" * (data_setting == 3) + "NetPHY_undirected" * (data_setting == 4)
                 for prod_setting in [1, 2]:
@@ -102,6 +102,11 @@ if __name__ == "__main__":
 
                             fw = open(path + "/" + product_name + "_b" + str(bud) + ".txt", 'w')
                             # -- no. of product, no. of seed, degree, wallet of seed --
+                            ### cc1: #product
+                            ### cc2: #seed
+                            ### cc3: degree
+                            ### cc4: affordable degree
+                            ### cc5: wallet when seed
                             cc1, cc2, cc3, cc4, cc5 = "", "", "", "", ""
                             for cc in class_count:
                                 cc1 = cc1 + str(cc[0] + 1) + "\t"
@@ -117,11 +122,14 @@ if __name__ == "__main__":
                             fw.write("\n" * 3)
 
                             # -- accumulative nodes --
+                            ### cannl_list: 10 class_accumulate_num_node_list
+                            ### cannl_str: class_accumulate_num_node_list for each seed
                             cannl_list = [0 for _ in range(len(class_accumulate_num_node_list[0]))]
                             for num in range(10):
                                 ca_list = ""
                                 for t, ca in enumerate(class_accumulate_num_node_list[num]):
                                     if num == 0:
+                                        # -- to remove the seed --
                                         ca -= (t + 1)
                                     ca_list = ca_list + str(ca) + "\t"
                                     cannl_list[t] += ca
@@ -133,6 +141,8 @@ if __name__ == "__main__":
                             fw.write("\n" * 4)
 
                             # -- accumulative wallet --
+                            ### aw_list: 10 class_accumulate_wallet
+                            ### aw_str: class_accumulate_num_node_list for each seed
                             aw_list = [0 for _ in range(len(class_accumulate_wallet[0]))]
                             for num in range(10):
                                 ca_list = ""
@@ -146,10 +156,17 @@ if __name__ == "__main__":
                             fw.write(aw_str + "\n")
                             fw.write("\n" * 4)
 
+                            ### ap1_list: acc_an_number for total product
+                            ### ap2_list: acc_current_profit for total product
+                            ### ap1: single an_number for each product
+                            ### ap2: single current_profit for each product
+                            ### apn1: acc_an_number for each product
+                            ### apn2: acc_current_profit for each product
                             ap1_list, ap2_list = [0], [0.0]
                             ap1, ap2 = ["" for _ in range(num_product)], ["" for _ in range(num_product)]
                             apn1, apn2 = [[0 for _ in range(num_product)]], [[0.0 for _ in range(num_product)]]
 
+                            ### an_promote_list: [mep_k_prod, mep_i_node, an_number, current_profit, seed_cost, out_degree]
                             for t, ap in enumerate(an_promote_list):
                                 if t != 0:
                                     ap1_list.append(ap1_list[t-1])
@@ -161,13 +178,15 @@ if __name__ == "__main__":
                                 for kk in range(num_product):
                                     if ap[0] == kk:
                                         apn1[t][kk] += ap[2]
-                                        apn2[t][kk] += round(ap[3])
+                                        apn2[t][kk] += round(ap[3], 2)
                                         ap1[kk] = ap1[kk] + str(ap[2]) + "\t"
                                         ap2[kk] = ap2[kk] + str(round(ap[3], 2)) + "\t"
                                     else:
                                         ap1[kk] = ap1[kk] + str(0) + "\t"
                                         ap2[kk] = ap2[kk] + str(0) + "\t"
                             # -- nodes for products --
+                            ### ap1_str: single an_number for each product
+                            ### apn1_str: acc_an_number for each product
                             for kk in range(num_product):
                                 fw.write(str(ap1[kk]) + "\n")
                             ap1_str = ""
@@ -183,6 +202,8 @@ if __name__ == "__main__":
                                 fw.write(str(apn1_str[kk]) + "\n")
                             fw.write("\n" * 7)
                             # -- profit for products --
+                            ### ap2_str: single current_profit for each product
+                            ### apn2_str: current_profit for each product
                             for kk in range(num_product):
                                 fw.write(str(ap2[kk]) + "\n")
                             ap2_str = ""
@@ -193,7 +214,7 @@ if __name__ == "__main__":
                             apn2_str = ["" for _ in range(num_product)]
                             for apn2_local in apn2:
                                 for kk, apn2_l in enumerate(apn2_local):
-                                    apn2_str[kk] += str(apn2_l) + "\t"
+                                    apn2_str[kk] += str(round(apn2_l, 2)) + "\t"
                             for kk in range(num_product):
                                 fw.write(str(apn2_str[kk]) + "\n")
                             fw.write("\n" * 7)
