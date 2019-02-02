@@ -154,7 +154,7 @@ if __name__ == "__main__":
                                 for kk in range(num_product):
                                     if ap[0] == kk:
                                         apn1[t][kk] += ap[2]
-                                        apn2[t][kk] += round(ap[3])
+                                        apn2[t][kk] += round(ap[3], 2)
                                         ap1[kk] = ap1[kk] + str(ap[2]) + "\t"
                                         ap2[kk] = ap2[kk] + str(round(ap[3], 2)) + "\t"
                                     else:
@@ -186,7 +186,7 @@ if __name__ == "__main__":
                             apn2_str = ["" for _ in range(num_product)]
                             for apn2_local in apn2:
                                 for kk, apn2_l in enumerate(apn2_local):
-                                    apn2_str[kk] += str(apn2_l) + "\t"
+                                    apn2_str[kk] += str(round(apn2_l, 2)) + "\t"
                             for kk in range(num_product):
                                 fw.write(str(apn2_str[kk]) + "\n")
                             fw.write("\n" * 7)
